@@ -149,7 +149,7 @@ def pause_map():
 
         # Calculer la position du joueur sur la mini-map
         player_map_x = int(x / largeur_map * LARGEUR_ECRAN)
-        player_map_y = int(y / hauteur_map * HAUTEUR_ECRAN)
+        player_map_y = int(y / hauteur_map * LARGEUR_ECRAN)
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)
@@ -160,7 +160,7 @@ def pause_map():
         # Dessiner les ennemis sur la mini-carte
         for ennemi in ennemis:
             ennemi_map_x = int(ennemi.x / largeur_map * LARGEUR_ECRAN)
-            ennemi_map_y = int(ennemi.y / hauteur_map * HAUTEUR_ECRAN)
+            ennemi_map_y = int(ennemi.y / hauteur_map * LARGEUR_ECRAN)
             # Dessiner un rond de couleur derrière l'image de l'ennemi
             pygame.draw.circle(FENETRE, (255, 0, 0), (ennemi_map_x, ennemi_map_y), ennemi.size // 4 + 3)
             ennemi_image = pygame.transform.scale(ennemi.image, (ennemi.size//2, ennemi.size//2))
@@ -207,7 +207,7 @@ def draw_health_bar():
     pygame.draw.rect(FENETRE, vert if player_health > 30 else rouge, (bar_x, bar_y, fill_width, bar_height))
 
 # Fonction pour créer et afficher le cône de lumière de la lampe-torche   
-def cone_lumiere():
+def cone_lumiere(dt):
     """Affiche un cône de lumière avec un dégradé basé uniquement sur la distance et retourne les coordonnées du cône."""
     # Position du joueur sur l'écran
     player_screen_x = x - camera_x + square_size // 2
@@ -256,6 +256,22 @@ def cone_lumiere():
     # Appliquer le masque à l'écran
     FENETRE.blit(mask, (0, 0))
 
+    # Mettre à jour l'animation des ennemis dans le cône de lumière
+    for ennemi in ennemis:
+        ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
+        ennemi_screen_y = ennemi.y - camera_y + ennemi.size // 2
+        if is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points):
+            ennemi.time_in_light += dt  # Incrémenter le temps passé dans le cône de lumière
+            ennemi.animation_timer += dt
+            ennemi.frozen = True  # Figer l'ennemi
+            if ennemi.animation_timer >= 1:  # Changer d'image toutes les secondes
+                ennemi.current_image_index = (ennemi.current_image_index + 1) % len(ennemi.images)
+                ennemi.image = ennemi.images[ennemi.current_image_index]
+                ennemi.animation_timer = 0  # Réinitialiser le compteur de temps
+        else:
+            ennemi.time_in_light = 0  # Réinitialiser le compteur de temps si l'ennemi n'est pas dans le cône
+            ennemi.frozen = False  # Défiger l'ennemi
+
     return cone_points
 
 # Fonction pour vérifier si l'ennemi est dans le cône de lumière
@@ -288,13 +304,24 @@ class Ennemi:
         self.direction = random.choice(['haut', 'bas', 'gauche', 'droite'])
         self.timer = 0
         self.time_in_light = 0  # Temps passé dans le cône de lumière
-        self.image = pygame.image.load('images/ennemi.png')
-        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.images = [
+            pygame.image.load('images/ennemi_1.png'),
+            pygame.image.load('images/ennemi_2.png'),
+            pygame.image.load('images/ennemi_3.png')
+        ]
+        self.images = [pygame.transform.scale(img, (self.size, self.size)) for img in self.images]
+        self.current_image_index = 0
+        self.image = self.images[self.current_image_index]
+        self.animation_timer = 0
         self.attack_cooldown = 0
+        self.frozen = False  # Indique si l'ennemi est figé
 
     def ennemiIA(self, player_x, player_y, dt):
         """Gère le mouvement des ennemis en fonction du joueur."""
         global player_health
+
+        if self.frozen:
+            return  # Si l'ennemi est figé, ne pas exécuter le reste de la fonction
 
         distance_to_player = ((self.x - player_x) ** 2 + (self.y - player_y) ** 2) ** 0.5
 
@@ -335,9 +362,30 @@ class Ennemi:
         if self.attack_cooldown > 0:
             self.attack_cooldown -= dt
 
+        # Animation de l'ennemi dans le cône de lumière
+        if self.time_in_light > 0:
+            self.animation_timer += dt
+            if self.animation_timer >= 1:  # Changer d'image toutes les secondes
+                self.current_image_index = (self.current_image_index + 1) % len(self.images)
+                self.image = self.images[self.current_image_index]
+                self.animation_timer = 0
+
     def deposer_moisissure(self):
         """Dépose de la moisissure à la position actuelle de l'ennemi."""
         moisissures.append((self.x, self.y))
+        moisissure_colliders.append(pygame.Rect(self.x, self.y, 64, 64))
+
+    
+
+def check_collision_with_moisissure(new_x, new_y):
+        player_rect = pygame.Rect(new_x, new_y, 64, 64)
+        for collider in moisissure_colliders:
+            if player_rect.colliderect(collider):
+                return True
+        return False
+  
+# Initialisation de la liste des ennemis
+ennemis = []
 
 # Fonction pour faire apparaître les ennemis aléatoirement sur la map à intervalle régulier
 def spawn_ennemi():
@@ -359,27 +407,25 @@ nettoyage_temps_debut = {}
 
 # Fonction pour afficher la moisissure laissée par les ennemis à leur mort
 def nettoyer_moisissure():
-    cone_points = []
     mouse_x, mouse_y = pygame.mouse.get_pos()
     temps_actuel = pygame.time.get_ticks()
     for moisissure in moisissures[:]:
         moisissure_screen_x = moisissure[0] - camera_x
         moisissure_screen_y = moisissure[1] - camera_y
-        if is_point_in_cone(moisissure_screen_x, moisissure_screen_y, cone_points):
-            distance = math.sqrt((mouse_x - moisissure_screen_x) ** 2 + (mouse_y - moisissure_screen_y) ** 2)
-            if distance < 75:  # Si la souris est suffisamment proche de la moisissure
-                if pygame.mouse.get_pressed()[0]:  # Si le bouton gauche de la souris est enfoncé
-                    if moisissure not in nettoyage_temps_debut:
-                        nettoyage_temps_debut[moisissure] = temps_actuel
-                    elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
-                        moisissures.remove(moisissure)
-                        del nettoyage_temps_debut[moisissure]
-                else:
-                    if moisissure in nettoyage_temps_debut:
-                        del nettoyage_temps_debut[moisissure]
+        distance = math.sqrt((mouse_x - moisissure_screen_x) ** 2 + (mouse_y - moisissure_screen_y) ** 2)
+        if distance < 75:  # Si la souris est suffisamment proche de la moisissure
+            if pygame.mouse.get_pressed()[0]:  # Si le bouton gauche de la souris est enfoncé
+                if moisissure not in nettoyage_temps_debut:
+                    nettoyage_temps_debut[moisissure] = temps_actuel
+                elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
+                    moisissures.remove(moisissure)
+                    del nettoyage_temps_debut[moisissure]
             else:
                 if moisissure in nettoyage_temps_debut:
                     del nettoyage_temps_debut[moisissure]
+        else:
+            if moisissure in nettoyage_temps_debut:
+                del nettoyage_temps_debut[moisissure]
 
 spawn_timer = 0
 spawn_interval = 5  # Intervalle de génération des ennemis en secondes
@@ -603,9 +649,17 @@ def afficher_controles():
                     afficher_menu_pause
 
 def main():
-    global fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines
+    global fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures
+
+    # Initialisation des variables
+    camera_x = x - LARGEUR_ECRAN // 2 + square_size // 2
+    camera_y = y - HAUTEUR_ECRAN // 2 + square_size // 2
+    ennemis_tues = 0
+    moisissures = []
+    cone_active = False
+
     while running:
-        pygame.time.delay(30)  # Contrôle la vitesse de la boucle
+        dt = clock.tick(30) / 1000.0  # Limiter le framerate à 30 FPS et obtenir un dt constant
 
         # Gestion des événements
         for event in pygame.event.get():
@@ -628,7 +682,6 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 if battery > 0:
                     cone_active = not cone_active
-        dt = clock.tick(30) / 1000.0  # Temps écoulé en secondes
 
         if cone_active:
             battery -= battery_drain_rate * dt
@@ -643,19 +696,27 @@ def main():
         keys = pygame.key.get_pressed()
         moving = False
         if keys[pygame.K_q]:
-            x -= velocity
+            new_x = x - velocity
+            if not check_collision_with_moisissure(new_x, y):
+                x = new_x
             current_direction = "gauche"
             moving = True
-        if keys[pygame.K_d]: 
-            x += velocity
+        if keys[pygame.K_d]:
+            new_x = x + velocity
+            if not check_collision_with_moisissure(new_x, y):
+                x = new_x
             current_direction = "droit"
             moving = True
-        if keys[pygame.K_z]: 
-            y -= velocity
+        if keys[pygame.K_z]:
+            new_y = y - velocity
+            if not check_collision_with_moisissure(x, new_y):
+                y = new_y
             current_direction = "haut"
             moving = True
-        if keys[pygame.K_s]:  
-            y += velocity
+        if keys[pygame.K_s]:
+            new_y = y + velocity
+            if not check_collision_with_moisissure(x, new_y):
+                y = new_y
             current_direction = "bas"
             moving = True
 
@@ -692,14 +753,14 @@ def main():
         FENETRE.blit(get_current_image(), (x - camera_x, y - camera_y))
 
         if cone_active or battery == 0:
-            cone_points = cone_lumiere()
+            cone_points = cone_lumiere(dt)
         else:
             # Assombrir les ennemis lorsque la batterie est épuisée
             mask = pygame.Surface((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.SRCALPHA)
             mask.fill((0, 0, 0, 245))
             player_screen_x = x - camera_x + square_size // 2
             player_screen_y = y - camera_y + square_size // 2
-            player_light_radius = 35  # Rayon de la lumière autour du personnage
+            player_light_radius = 65  # Rayon de la lumière autour du personnage
             pygame.draw.circle(mask, (0, 0, 0, 150), (player_screen_x, player_screen_y), player_light_radius)
             FENETRE.blit(mask, (0, 0))
             cone_points = []
@@ -721,10 +782,18 @@ def main():
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
             if is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points) or distance_to_player < VISIBILITY_DISTANCE:
                 ennemi.time_in_light += dt
+                ennemi.animation_timer += dt
+                ennemi.frozen = True  # Figer l'ennemi
+                if ennemi.animation_timer >= 1:  # Changer d'image toutes les secondes
+                    ennemi.current_image_index = (ennemi.current_image_index + 1) % len(ennemi.images)
+                    ennemi.image = ennemi.images[ennemi.current_image_index]
+                    ennemi.animation_timer = 0  # Réinitialiser le compteur de temps
                 FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))  # Dessiner l'ennemi s'il est dans le cône de lumière ou proche du joueur
             else:
                 ennemi.time_in_light = 0
+                ennemi.frozen = False  # Défiger l'ennemi
 
+            # Supprimer l'ennemi après 3 secondes dans le cône de lumière
             if ennemi.time_in_light > 3:
                 ennemi.deposer_moisissure()
                 ennemis.remove(ennemi)

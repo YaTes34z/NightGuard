@@ -16,6 +16,7 @@ cone_active = True  # Le cône est allumé au début
 
 # Liste pour stocker les positions de la moisissure et des ennemis 
 moisissures = []
+moisissure_colliders = []
 ennemis = []
 ennemis_tues = 0
 

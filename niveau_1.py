@@ -149,7 +149,7 @@ def pause_map():
 
         # Calculer la position du joueur sur la mini-map
         player_map_x = int(x / largeur_map * LARGEUR_ECRAN)
-        player_map_y = int(y / hauteur_map * HAUTEUR_ECRAN)
+        player_map_y = int(y / hauteur_map * LARGEUR_ECRAN)
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)

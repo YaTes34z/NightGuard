@@ -780,10 +780,6 @@ def main():
                 ennemi.deposer_moisissure()
                 ennemis.remove(ennemi)
                 ennemis_tues += 1  # Incrémenter le compteur d'ennemis tués
-                if ennemis_tues >= 5:  # Vérifier si le joueur a atteint le nombre requis
-                    # Charger la nouvelle carte ici
-                    fond = pygame.image.load('images/map2.png')
-                    fond = pygame.transform.scale(fond, (largeur_map, hauteur_map))
 
         # Nettoyer la moisissure
         nettoyer_moisissure()

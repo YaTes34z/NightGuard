@@ -373,6 +373,7 @@ class Ennemi:
     def deposer_moisissure(self):
         """Dépose de la moisissure à la position actuelle de l'ennemi."""
         moisissures.append((self.x, self.y))
+<<<<<<< HEAD
         moisissure_colliders.append(pygame.Rect(self.x, self.y, 64, 64))
 
     
@@ -384,6 +385,9 @@ def check_collision_with_moisissure(new_x, new_y):
                 return True
         return False
   
+=======
+
+>>>>>>> 2154ff5d73c0bdb9d8237ca86a11ddcb6fc464ef
 # Initialisation de la liste des ennemis
 ennemis = []
 
@@ -696,6 +700,7 @@ def main():
         keys = pygame.key.get_pressed()
         moving = False
         if keys[pygame.K_q]:
+<<<<<<< HEAD
             new_x = x - velocity
             if not check_collision_with_moisissure(new_x, y):
                 x = new_x
@@ -717,6 +722,21 @@ def main():
             new_y = y + velocity
             if not check_collision_with_moisissure(x, new_y):
                 y = new_y
+=======
+            x -= velocity
+            current_direction = "gauche"
+            moving = True
+        if keys[pygame.K_d]: 
+            x += velocity
+            current_direction = "droit"
+            moving = True
+        if keys[pygame.K_z]: 
+            y -= velocity
+            current_direction = "haut"
+            moving = True
+        if keys[pygame.K_s]:  
+            y += velocity
+>>>>>>> 2154ff5d73c0bdb9d8237ca86a11ddcb6fc464ef
             current_direction = "bas"
             moving = True
 
@@ -798,10 +818,13 @@ def main():
                 ennemi.deposer_moisissure()
                 ennemis.remove(ennemi)
                 ennemis_tues += 1  # Incrémenter le compteur d'ennemis tués
+<<<<<<< HEAD
                 if ennemis_tues >= 5:  # Vérifier si le joueur a atteint le nombre requis
                     # Charger la nouvelle carte ici
                     fond = pygame.image.load('images/map2.png')
                     fond = pygame.transform.scale(fond, (largeur_map, hauteur_map))
+=======
+>>>>>>> 2154ff5d73c0bdb9d8237ca86a11ddcb6fc464ef
 
         # Nettoyer la moisissure
         nettoyer_moisissure()

@@ -407,6 +407,7 @@ nettoyage_temps_debut = {}
 
 # Fonction pour afficher la moisissure laissée par les ennemis à leur mort
 def nettoyer_moisissure():
+    global bacteries_nettoyees
     mouse_x, mouse_y = pygame.mouse.get_pos()
     temps_actuel = pygame.time.get_ticks()
     for moisissure in moisissures[:]:
@@ -420,6 +421,7 @@ def nettoyer_moisissure():
                 elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
                     moisissures.remove(moisissure)
                     del nettoyage_temps_debut[moisissure]
+                    bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:
                 if moisissure in nettoyage_temps_debut:
                     del nettoyage_temps_debut[moisissure]
@@ -648,13 +650,60 @@ def afficher_controles():
                     controles_actif = False
                     afficher_menu_pause
 
+def draw_counters():
+    font = pygame.font.Font(None, 40)
+    text_ennemis = font.render(f"Ennemis tués: {ennemis_tues}", True, (255, 255, 255))
+    text_bacteries = font.render(f"Bactéries nettoyées: {bacteries_nettoyees}", True, (255, 255, 255))
+    FENETRE.blit(text_ennemis, (20, 20))
+    FENETRE.blit(text_bacteries, (20, 60))
+
+
+def win():
+    """Affiche un menu indiquant que le joueur a gagné."""
+    clock = pygame.time.Clock()
+   
+    # Charger l'image du bouton quitter
+    image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
+    largeur_bouton = 200  # Largeur souhaitée pour le bouton
+    hauteur_bouton = 110  # Hauteur souhaitée pour le bouton
+    image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
+        
+    bouton_quitter = Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
+    
+    while True:
+        FENETRE.fill((0, 0, 0))  # Remplir l'écran de noir
+        
+        # Afficher le texte "Vous avez gagné !"
+        font = pygame.font.Font(None, 74)
+        text_surface = font.render("Vous avez gagné !", True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN // 2 - 60))
+        FENETRE.blit(text_surface, text_rect)
+        
+        # Dessiner le bouton quitter
+        bouton_quitter.dessiner(FENETRE)
+        
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.clic(event.pos):
+                    bouton_quitter.action()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return  # Retourner au jeu
+            
+        clock.tick(30)
+
 def main():
-    global fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures
+    global bacteries_nettoyees, fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures
 
     # Initialisation des variables
     camera_x = x - LARGEUR_ECRAN // 2 + square_size // 2
     camera_y = y - HAUTEUR_ECRAN // 2 + square_size // 2
     ennemis_tues = 0
+    bacteries_nettoyees = 0
     moisissures = []
     cone_active = False
 
@@ -811,6 +860,13 @@ def main():
 
         # Afficher le dialogue si nécessaire
         draw_dialogue()
+
+        # Afficher les compteurs
+        draw_counters()
+
+
+        if bacteries_nettoyees>=5 and ennemis_tues>=5:
+            win()
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()

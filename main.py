@@ -2,6 +2,7 @@ import sys
 import pygame
 import cv2
 import niveau_1
+import niveau_2
 import pygame.mixer
 
 pygame.init()
@@ -129,6 +130,8 @@ def lancer_niveau_1():
 def lancer_niveau_2():
     print("Le niveau 2 n'est pas encore disponible.")
     # jouer_cinematique(2)
+    niveau_2.main()
+
 
 def afficher_menu_principal():
     """Affiche le menu principal."""

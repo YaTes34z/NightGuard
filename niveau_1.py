@@ -40,7 +40,7 @@ marche_haut = [pygame.transform.scale(img, (square_size, square_size)) for img i
 marche_bas = [pygame.transform.scale(img, (square_size, square_size)) for img in marche_bas]
 
 # Charger l'image de fond
-fond = pygame.image.load('images/test_map.jpg')
+fond = pygame.image.load('images/map_niveau1.png')
 
 # Redimensionner l'image si nécessaire
 fond = pygame.transform.scale(fond, (largeur_map, hauteur_map))

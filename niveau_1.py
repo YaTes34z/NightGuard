@@ -395,13 +395,6 @@ def spawn_ennemi():
     ennemi = Ennemi(ennemi_x, ennemi_y)
     ennemis.append(ennemi)
 
-# Fonction pour afficher le compteur d'ennemis tués par le joueur
-def draw_enemy_counter():
-    font = pygame.font.Font(None, 40)
-    text = font.render(f"Ennemis tués: {ennemis_tues}", True, (255, 255, 255))
-    text_rect = text.get_rect(center=(LARGEUR_ECRAN // 2, 50))
-    FENETRE.blit(text, text_rect)
-
 # Dictionnaire pour stocker le temps de début de nettoyage pour chaque moisissure
 nettoyage_temps_debut = {}
 
@@ -821,7 +814,6 @@ def main():
         if player_health == 0:
             pygame.quit()
 
-        draw_enemy_counter()
 
         # Mettre à jour les ennemis et vérifier s'ils sont dans le cône de lumière
         for ennemi in ennemis[:]:

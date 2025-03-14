@@ -40,9 +40,9 @@ class Bouton:
         if self.image:
             self.rect = self.image.get_rect(topleft=position)
         else:
-            self.rect = pygame.Rect(position[0], position[1], 180, 50)
-        self.couleur = (30, 30, 30)
-        self.couleur_hover = (60, 60, 60)
+            self.rect = pygame.Rect(position[0], position[1], 100, 50)  # Taille par défaut pour un bouton sans image
+        self.couleur = (200, 0, 0)  # Rouge par défaut
+        self.couleur_hover = (255, 50, 50)  # Rouge clair pour hover
 
     def dessiner(self, surface):
         couleur = self.couleur_hover if self.rect.collidepoint(pygame.mouse.get_pos()) else self.couleur
@@ -132,6 +132,13 @@ def lancer_niveau_2():
     # jouer_cinematique(2)
     niveau_2.main()
 
+def reinitialiser_niveau_1():
+    niveau_1.reinitialiser()
+    print("Progression du niveau 1 réinitialisée.")
+
+def reinitialiser_niveau_2():
+    niveau_2.reinitialiser()
+    print("Progression du niveau 2 réinitialisée.")
 
 def afficher_menu_principal():
     """Affiche le menu principal."""
@@ -153,7 +160,9 @@ def afficher_menu_principal():
     
     boutons = [
         Bouton("Niveau 1", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 140), lancer_niveau_1, image=image_niveau_1),
+        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - 140), reinitialiser_niveau_1),
         Bouton("Niveau 2", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 20), lancer_niveau_2, image=image_niveau_2),
+        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - 20), reinitialiser_niveau_2),
         Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 100), afficher_controles, image=image_controles),
         Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 220), lambda: pygame.quit() or sys.exit(), image=image_quitter)
     ]

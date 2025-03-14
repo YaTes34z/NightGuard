@@ -689,6 +689,49 @@ def win():
             
         clock.tick(30)
 
+def reinitialiser():
+    """Réinitialise toutes les variables du niveau 1 à leur état initial."""
+    global x, y, camera_x, camera_y, ennemis_tues, bacteries_nettoyees, moisissures, cone_active
+    global spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed
+    global last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval
+    global dialogues_termines, player_health, battery, ennemis
+
+    # Réinitialisation des variables principales
+    x = largeur_map // 2 - square_size // 2  # Position initiale du joueur
+    y = hauteur_map // 2 - square_size // 2
+    camera_x = x - LARGEUR_ECRAN // 2 + square_size // 2
+    camera_y = y - LARGEUR_ECRAN // 2 + square_size // 2
+
+    # Réinitialisation des compteurs
+    ennemis_tues = 0
+    bacteries_nettoyees = 0
+    moisissures = []
+    cone_active = False
+
+    # Réinitialisation des dialogues
+    current_dialogue_index = 0
+    show_dialogue = True
+    dialogues_termines = False
+    dialogue_speed = 50
+    last_update_time = 0
+    current_letter_index = 0
+    show_ellipsis = False
+    ellipsis_timer = 0
+    ellipsis_interval = 500
+
+    # Réinitialisation des ennemis
+    ennemis = []
+
+    # Réinitialisation de la santé et de la batterie
+    player_health = 100
+    battery = 100.0
+
+    # Réinitialisation du timer de spawn
+    spawn_timer = 0
+    spawn_interval = 5
+
+    print("Niveau 1 réinitialisé.")
+
 def main():
     global bacteries_nettoyees, fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures
 

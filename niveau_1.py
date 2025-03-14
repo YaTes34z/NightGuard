@@ -398,6 +398,10 @@ def spawn_ennemi():
 # Dictionnaire pour stocker le temps de début de nettoyage pour chaque moisissure
 nettoyage_temps_debut = {}
 
+# Fonction pour supprimer le collider correspondant à une moisissure
+def supprimer_collider_moisissure(moisissure):
+    moisissure_colliders[:] = [collider for collider in moisissure_colliders if collider.topleft != moisissure]
+
 # Fonction pour afficher la moisissure laissée par les ennemis à leur mort
 def nettoyer_moisissure():
     global bacteries_nettoyees
@@ -413,6 +417,7 @@ def nettoyer_moisissure():
                     nettoyage_temps_debut[moisissure] = temps_actuel
                 elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
                     moisissures.remove(moisissure)
+                    supprimer_collider_moisissure(moisissure)
                     del nettoyage_temps_debut[moisissure]
                     bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:

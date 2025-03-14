@@ -398,6 +398,10 @@ def spawn_ennemi():
 # Dictionnaire pour stocker le temps de début de nettoyage pour chaque moisissure
 nettoyage_temps_debut = {}
 
+# Fonction pour supprimer le collider correspondant à une moisissure
+def supprimer_collider_moisissure(moisissure):
+    moisissure_colliders[:] = [collider for collider in moisissure_colliders if collider.topleft != moisissure]
+
 # Fonction pour afficher la moisissure laissée par les ennemis à leur mort
 def nettoyer_moisissure():
     global bacteries_nettoyees
@@ -413,6 +417,7 @@ def nettoyer_moisissure():
                     nettoyage_temps_debut[moisissure] = temps_actuel
                 elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
                     moisissures.remove(moisissure)
+                    supprimer_collider_moisissure(moisissure)
                     del nettoyage_temps_debut[moisissure]
                     bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:
@@ -426,9 +431,9 @@ spawn_timer = 0
 spawn_interval = 5  # Intervalle de génération des ennemis en secondes
 
 dialogues = [
-    "Qu'est ce qu'il s'est passé ? Où suis-je ?",
-    "Je me suis fait absorbé par le tableau ?",
-    "Il faut que je trouve un moyen de sortir d'ici !"
+    "Oh non ! Pas encore...",
+    "Je dois trouver les derniers ennemis",
+    "Il faut que je sauve le musée !"
 ]
 current_dialogue_index = 0
 show_dialogue = True
@@ -779,7 +784,7 @@ def main():
 
         # Empêcher la caméra de sortir de la carte
         camera_x = max(0, min(largeur_map - LARGEUR_ECRAN, camera_x))
-        camera_y = max(0, min(hauteur_map - HAUTEUR_ECRAN, camera_y))
+        camera_y = max(0, min(hauteur_map - LARGEUR_ECRAN, camera_y))
 
         # Effacer l'écran (fenêtre) à chaque frame
         FENETRE.fill(blanc)

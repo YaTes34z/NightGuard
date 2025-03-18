@@ -18,7 +18,8 @@ LARGEUR_ECRAN, HAUTEUR_ECRAN = info.current_w, info.current_h
 largeur_map = LARGEUR_ECRAN * 2
 hauteur_map = HAUTEUR_ECRAN * 2
 
-x = largeur_map // 2 - square_size // 2  # Position initiale du carré (au centre de la carte)
+# Position initiale du joueur (au centre de la carte)
+x = largeur_map // 2 - square_size // 2
 y = hauteur_map // 2 - square_size // 2
 
 # Fenêtre en plein écran
@@ -148,22 +149,25 @@ def pause_map():
         FENETRE.blit(mini_map, (0, 0))
 
         # Calculer la position du joueur sur la mini-map
-        player_map_x = int(x / largeur_map * LARGEUR_ECRAN)
-        player_map_y = int(y / hauteur_map * LARGEUR_ECRAN)
+        player_map_x = int((x / largeur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers la droite
+        player_map_y = int((y / hauteur_map) * HAUTEUR_ECRAN) + square_size // 4  # Décalage vers le bas
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)
         # Dessiner l'image du personnage
-        player_image = pygame.transform.scale(marche_bas[0], (square_size//2, square_size//2))
+        player_image = pygame.transform.scale(marche_bas[0], (square_size // 2, square_size // 2))
         FENETRE.blit(player_image, (player_map_x - player_image.get_width() // 2, player_map_y - player_image.get_height() // 2))
 
-        # Dessiner les ennemis sur la mini-carte
+        # Dessiner les ennemis sur la mini-map
         for ennemi in ennemis:
-            ennemi_map_x = int(ennemi.x / largeur_map * LARGEUR_ECRAN)
-            ennemi_map_y = int(ennemi.y / hauteur_map * LARGEUR_ECRAN)
-            # Dessiner un rond de couleur derrière l'image de l'ennemi
-            pygame.draw.circle(FENETRE, (255, 0, 0), (ennemi_map_x, ennemi_map_y), ennemi.size // 4 + 3)
-            ennemi_image = pygame.transform.scale(ennemi.image, (ennemi.size//2, ennemi.size//2))
+            ennemi_map_x = int((ennemi.x / largeur_map) * LARGEUR_ECRAN)
+            ennemi_map_y = int((ennemi.y / hauteur_map) * HAUTEUR_ECRAN)
+
+            # Dessiner un rond rouge derrière l'image de l'ennemi
+            pygame.draw.circle(FENETRE, (255, 0, 0), (ennemi_map_x, ennemi_map_y), square_size // 4 + 3)
+
+            # Dessiner l'image de l'ennemi redimensionnée
+            ennemi_image = pygame.transform.scale(ennemi.image, (square_size // 3, square_size // 3))
             FENETRE.blit(ennemi_image, (ennemi_map_x - ennemi_image.get_width() // 2, ennemi_map_y - ennemi_image.get_height() // 2))
 
         # Ajouter du texte pour quitter la carte
@@ -432,8 +436,8 @@ spawn_interval = 5  # Intervalle de génération des ennemis en secondes
 
 dialogues = [
     "Qu'est ce qu'il s'est passé ? Où suis-je ?",
-    "Je me suis fait absorbé par le tableau ?",
-    "Il faut que je trouve un moyen de sortir d'ici !"
+    "Je me suis fait absorber par le tableau ?",
+    "Je dois trouver un moyen de sortir d'ici !"
 ]
 current_dialogue_index = 0
 show_dialogue = True
@@ -862,6 +866,7 @@ def main():
         if player_health == 0:
             pygame.quit()
 
+
         # Mettre à jour les ennemis et vérifier s'ils sont dans le cône de lumière
         for ennemi in ennemis[:]:
             ennemi.ennemiIA(x, y, dt)
@@ -882,7 +887,7 @@ def main():
                 ennemi.frozen = False  # Défiger l'ennemi
 
             # Supprimer l'ennemi après 3 secondes dans le cône de lumière
-            if ennemi.time_in_light > 3 and cone_active:
+            if ennemi.time_in_light > 3:
                 ennemi.deposer_moisissure()
                 ennemis.remove(ennemi)
                 ennemis_tues += 1  # Incrémenter le compteur d'ennemis tués
@@ -903,7 +908,8 @@ def main():
         # Afficher les compteurs
         draw_counters()
 
-        if bacteries_nettoyees >= 5 and ennemis_tues >= 5:
+
+        if bacteries_nettoyees>=5 and ennemis_tues>=5:
             win()
 
         # Mettre à jour l'affichage de la fenêtre

@@ -862,7 +862,6 @@ def main():
         if player_health == 0:
             pygame.quit()
 
-
         # Mettre à jour les ennemis et vérifier s'ils sont dans le cône de lumière
         for ennemi in ennemis[:]:
             ennemi.ennemiIA(x, y, dt)
@@ -883,7 +882,7 @@ def main():
                 ennemi.frozen = False  # Défiger l'ennemi
 
             # Supprimer l'ennemi après 3 secondes dans le cône de lumière
-            if ennemi.time_in_light > 3:
+            if ennemi.time_in_light > 3 and cone_active:
                 ennemi.deposer_moisissure()
                 ennemis.remove(ennemi)
                 ennemis_tues += 1  # Incrémenter le compteur d'ennemis tués
@@ -904,8 +903,7 @@ def main():
         # Afficher les compteurs
         draw_counters()
 
-
-        if bacteries_nettoyees>=5 and ennemis_tues>=5:
+        if bacteries_nettoyees >= 5 and ennemis_tues >= 5:
             win()
 
         # Mettre à jour l'affichage de la fenêtre

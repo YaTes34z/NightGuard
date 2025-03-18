@@ -128,7 +128,6 @@ def lancer_niveau_1():
     niveau_1.main()
 
 def lancer_niveau_2():
-    print("Le niveau 2 n'est pas encore disponible.")
     # jouer_cinematique(2)
     niveau_2.main()
 

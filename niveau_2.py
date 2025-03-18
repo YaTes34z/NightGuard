@@ -42,7 +42,6 @@ marche_bas = [pygame.transform.scale(img, (square_size, square_size)) for img in
 
 # Charger l'image de fond
 fond = pygame.image.load('images/map_niveau2.png')
-
 # Redimensionner l'image si nécessaire
 fond = pygame.transform.scale(fond, (largeur_map, hauteur_map))
 
@@ -399,7 +398,8 @@ def nettoyer_moisissure():
     global bacteries_nettoyees
     mouse_x, mouse_y = pygame.mouse.get_pos()
     temps_actuel = pygame.time.get_ticks()
-    for moisissure in moisissures[:]:
+    moisissures_a_supprimer = []
+    for moisissure in moisissures:
         moisissure_screen_x = moisissure[0] - camera_x
         moisissure_screen_y = moisissure[1] - camera_y
         distance = math.sqrt((mouse_x - moisissure_screen_x) ** 2 + (mouse_y - moisissure_screen_y) ** 2)
@@ -408,8 +408,7 @@ def nettoyer_moisissure():
                 if moisissure not in nettoyage_temps_debut:
                     nettoyage_temps_debut[moisissure] = temps_actuel
                 elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
-                    moisissures.remove(moisissure)
-                    supprimer_collider_moisissure(moisissure)
+                    moisissures_a_supprimer.append(moisissure)
                     del nettoyage_temps_debut[moisissure]
                     bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:
@@ -419,12 +418,16 @@ def nettoyer_moisissure():
             if moisissure in nettoyage_temps_debut:
                 del nettoyage_temps_debut[moisissure]
 
+    for moisissure in moisissures_a_supprimer:
+        moisissures.remove(moisissure)
+        supprimer_collider_moisissure(moisissure)
+
 spawn_timer = 0
 spawn_interval = 5  # Intervalle de génération des ennemis en secondes
 
 dialogues = [
     "Oh non ! Pas encore...",
-    "Je dois trouver les derniers ennemis",
+    "Je dois trouver les derniers ennemis.",
     "Il faut que je sauve le musée !"
 ]
 current_dialogue_index = 0

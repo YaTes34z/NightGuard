@@ -27,7 +27,7 @@ player_health = 100
 personnage = pygame.image.load('images/homme_droit_1.png')
 personnage = pygame.transform.scale(personnage, (square_size, square_size))
 
-velocity = 10  # Vitesse de déplacement
+velocity = 5  # Vitesse de déplacement
 
 # Position de la caméra
 camera_x, camera_y = 0, 0

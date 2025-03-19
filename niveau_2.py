@@ -296,9 +296,9 @@ class Ennemi:
         self.timer = 0
         self.time_in_light = 0  # Temps passé dans le cône de lumière
         self.images = [
-            pygame.image.load('images/ennemi_1.png'),
-            pygame.image.load('images/ennemi_2.png'),
-            pygame.image.load('images/ennemi_3.png')
+            pygame.image.load('images/ennemi2_1.png'),
+            pygame.image.load('images/ennemi2_2.png'),
+            pygame.image.load('images/ennemi2_3.png')
         ]
         self.images = [pygame.transform.scale(img, (self.size, self.size)) for img in self.images]
         self.current_image_index = 0

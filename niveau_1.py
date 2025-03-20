@@ -150,7 +150,7 @@ def pause_map():
 
         # Calculer la position du joueur sur la mini-map
         player_map_x = int((x / largeur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers la droite
-        player_map_y = int((y / hauteur_map) * HAUTEUR_ECRAN) + square_size // 4  # Décalage vers le bas
+        player_map_y = int((y / hauteur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers le bas
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)
@@ -161,7 +161,7 @@ def pause_map():
         # Dessiner les ennemis sur la mini-map
         for ennemi in ennemis:
             ennemi_map_x = int((ennemi.x / largeur_map) * LARGEUR_ECRAN)
-            ennemi_map_y = int((ennemi.y / hauteur_map) * HAUTEUR_ECRAN)
+            ennemi_map_y = int((ennemi.y / hauteur_map) * LARGEUR_ECRAN)
 
             # Dessiner un rond rouge derrière l'image de l'ennemi
             pygame.draw.circle(FENETRE, (255, 0, 0), (ennemi_map_x, ennemi_map_y), square_size // 4 + 3)
@@ -334,10 +334,13 @@ class Ennemi:
             dx = player_x - self.x
             dy = player_y - self.y
             angle = math.atan2(dy, dx)
-            self.x += self.speed * math.cos(angle)
-            self.y += self.speed * math.sin(angle)
 
-            # Infliger des dégâts au joueur
+            # Arrêter le mouvement si l'ennemi est trop proche du joueur
+            if distance_to_player > self.size // 2:  # Par exemple, moitié de la taille de l'ennemi
+                self.x += self.speed * math.cos(angle)
+                self.y += self.speed * math.sin(angle)
+
+            # Infliger des dégâts au joueur si l'ennemi est suffisamment proche
             if distance_to_player < self.size and self.attack_cooldown <= 0:
                 player_health -= 10
                 player_health = max(player_health, 0)
@@ -859,6 +862,14 @@ def main():
             FENETRE.blit(mask, (0, 0))
             cone_points = []
 
+        # Dessiner les ennemis visibles dans le cercle lumineux
+        for ennemi in ennemis:
+            ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
+            ennemi_screen_y = ennemi.y - camera_y + ennemi.size // 2
+            distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
+            if distance_to_player < 65:  # Si l'ennemi est dans le cercle lumineux
+                FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))
+
         draw_battery()
 
         draw_health_bar()  # Afficher la barre de vie
@@ -873,21 +884,23 @@ def main():
             ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
             ennemi_screen_y = ennemi.y - camera_y + ennemi.size // 2
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
-            if is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points) or distance_to_player < VISIBILITY_DISTANCE:
-                ennemi.time_in_light += dt
+
+            # Vérifier si l'ennemi est dans le cône de lumière ou dans le cercle lumineux autour du joueur
+            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) or distance_to_player < VISIBILITY_DISTANCE:
+                ennemi.time_in_light += dt if cone_active else 0  # Incrémenter uniquement si le cône est actif
                 ennemi.animation_timer += dt
-                ennemi.frozen = True  # Figer l'ennemi
+                ennemi.frozen = cone_active  # Figer l'ennemi uniquement si le cône est actif
                 if ennemi.animation_timer >= 1:  # Changer d'image toutes les secondes
                     ennemi.current_image_index = (ennemi.current_image_index + 1) % len(ennemi.images)
                     ennemi.image = ennemi.images[ennemi.current_image_index]
                     ennemi.animation_timer = 0  # Réinitialiser le compteur de temps
-                FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))  # Dessiner l'ennemi s'il est dans le cône de lumière ou proche du joueur
+                FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))  # Dessiner l'ennemi
             else:
                 ennemi.time_in_light = 0
                 ennemi.frozen = False  # Défiger l'ennemi
 
-            # Supprimer l'ennemi après 3 secondes dans le cône de lumière
-            if ennemi.time_in_light > 3:
+            # Supprimer l'ennemi après 3 secondes dans le cône de lumière uniquement si le cône est actif
+            if cone_active and ennemi.time_in_light > 3:
                 ennemi.deposer_moisissure()
                 ennemis.remove(ennemi)
                 ennemis_tues += 1  # Incrémenter le compteur d'ennemis tués

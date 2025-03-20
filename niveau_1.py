@@ -158,7 +158,6 @@ def pause_map():
         # Dessiner l'image du personnage
         player_image = pygame.transform.scale(marche_bas[0], (square_size // 2, square_size // 2))
         FENETRE.blit(player_image, (player_map_x - player_image.get_width() // 2, player_map_y - player_image.get_height() // 2))
-
         # Dessiner les ennemis sur la mini-map
         for ennemi in ennemis:
             ennemi_map_x = int((ennemi.x / largeur_map) * LARGEUR_ECRAN)
@@ -406,11 +405,12 @@ def spawn_ennemi():
 # Dictionnaire pour stocker le temps de début de nettoyage pour chaque moisissure
 nettoyage_temps_debut = {}
 
+
 # Fonction pour supprimer le collider correspondant à une moisissure
 def supprimer_collider_moisissure(moisissure):
-    moisissure_colliders[:] = [collider for collider in moisissure_colliders if collider.topleft != moisissure]
+    moisissure_colliders[:] = [collider for collider in moisissure_colliders if not collider.collidepoint(moisissure)]
 
-# Fonction pour afficher la moisissure laissée par les ennemis à leur mort
+#Fonction pour afficher la moisissure laissée par les ennemis à leur mort
 def nettoyer_moisissure():
     global bacteries_nettoyees
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -425,7 +425,7 @@ def nettoyer_moisissure():
                     nettoyage_temps_debut[moisissure] = temps_actuel
                 elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
                     moisissures.remove(moisissure)
-                    supprimer_collider_moisissure(moisissure)
+                    supprimer_collider_moisissure(moisissure)  # Supprimer le collider correspondant
                     del nettoyage_temps_debut[moisissure]
                     bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:

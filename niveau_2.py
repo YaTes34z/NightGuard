@@ -15,8 +15,8 @@ info = pygame.display.Info()
 LARGEUR_ECRAN, HAUTEUR_ECRAN = info.current_w, info.current_h
 
 # Taille de la carte (map)
-largeur_map = LARGEUR_ECRAN * 2
-hauteur_map = HAUTEUR_ECRAN * 2
+largeur_map = int(1366 * 2 * scale_multiplier)
+hauteur_map = int(768 * 2 * scale_multiplier)
 
 # Position initiale du joueur (au centre de la carte)
 x = largeur_map // 2 - square_size // 2
@@ -42,6 +42,7 @@ marche_bas = [pygame.transform.scale(img, (square_size, square_size)) for img in
 
 # Charger l'image de fond
 fond = pygame.image.load('images/map_niveau2.png')
+
 # Redimensionner l'image si nécessaire
 fond = pygame.transform.scale(fond, (largeur_map, hauteur_map))
 
@@ -71,7 +72,7 @@ class Bouton:
             surface.blit(self.image, self.rect.topleft)
         else:
             pygame.draw.rect(surface, couleur, self.rect, border_radius=5)
-            font = pygame.font.Font(None, 36)
+            font = pygame.font.Font(None, int(36*scale_multiplier))
             texte_surface = font.render(self.texte, True, (255, 255, 255))
             texte_rect = texte_surface.get_rect(center=self.rect.center)
             surface.blit(texte_surface, texte_rect)
@@ -89,16 +90,16 @@ def afficher_menu_pause():
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     
     # Redimensionner les images des boutons pour qu'elles aient la taille souhaitée
-    largeur_bouton = 200  # Largeur souhaitée pour les boutons
-    hauteur_bouton = 110   # Hauteur souhaitée pour les boutons
+    largeur_bouton = int(200 * scale_multiplier)
+    hauteur_bouton = int(110 * scale_multiplier)
     image_controles = pygame.transform.scale(image_controles, (largeur_bouton, hauteur_bouton))
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
-    
+
     boutons = [
-        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 60), afficher_controles(), image=image_controles),
-        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), lambda: pygame.quit() or sys.exit(), image=image_quitter)
+        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(60 * scale_multiplier)), afficher_controles, image=image_controles),
+        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(60 * scale_multiplier)), accueil.afficher_menu_principal, image=image_quitter)
     ]
-    
+
     while True:
         FENETRE.blit(fond, (0, 0))
         for bouton in boutons:
@@ -140,7 +141,7 @@ def pause_menu():
 def pause_map():
     global paused
     paused = True  # Bloque le jeu pendant l'affichage de la carte
-    font = pygame.font.Font(None, 50)
+    font = pygame.font.Font(None, int(50*scale_multiplier))
 
     while paused:
         # Afficher la carte complète redimensionnée pour tenir dans l'écran
@@ -149,7 +150,7 @@ def pause_map():
 
         # Calculer la position du joueur sur la mini-map
         player_map_x = int((x / largeur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers la droite
-        player_map_y = int((y / hauteur_map) * HAUTEUR_ECRAN) + square_size // 4  # Décalage vers le bas
+        player_map_y = int((y / hauteur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers le bas
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)
@@ -157,6 +158,7 @@ def pause_map():
         player_image = pygame.transform.scale(marche_bas[0], (square_size // 2, square_size // 2))
         FENETRE.blit(player_image, (player_map_x - player_image.get_width() // 2, player_map_y - player_image.get_height() // 2))
 
+        # Dessiner les ennemis sur la mini-map
         for ennemi in ennemis:
             ennemi_map_x = int((ennemi.x / largeur_map) * LARGEUR_ECRAN)
             ennemi_map_y = int((ennemi.y / hauteur_map) * LARGEUR_ECRAN)
@@ -167,7 +169,7 @@ def pause_map():
             # Dessiner l'image de l'ennemi redimensionnée
             ennemi_image = pygame.transform.scale(ennemi.image, (square_size // 3, square_size // 3))
             FENETRE.blit(ennemi_image, (ennemi_map_x - ennemi_image.get_width() // 2, ennemi_map_y - ennemi_image.get_height() // 2))
-            
+
         # Ajouter du texte pour quitter la carte
         text = font.render("Appuyez sur 'E' pour revenir au jeu", True, (255, 255, 255))
         text_rect = text.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN - 50))
@@ -190,8 +192,8 @@ clock = pygame.time.Clock()
 # Fonction pour dessiner la batterie
 def draw_battery():
     """Affiche la barre de batterie en bas et au centre de l'écran."""
-    bar_width = 300
-    bar_height = 20
+    bar_width = int(300 * scale_multiplier)
+    bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
     bar_y = HAUTEUR_ECRAN - 40  # Position en bas de l'écran
     fill_width = int((battery / 100) * bar_width)
@@ -200,8 +202,8 @@ def draw_battery():
 
 def draw_health_bar():
     """Affiche la barre de vie en haut et au centre de l'écran."""
-    bar_width = 300
-    bar_height = 20
+    bar_width = int(300 * scale_multiplier)
+    bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
     bar_y = 20  # Position en haut de l'écran
     fill_width = int((player_health / 100) * bar_width)
@@ -252,7 +254,7 @@ def cone_lumiere(dt):
                     cone_points = points
 
     # Assurer que le personnage soit toujours éclairé (cercle lumineux autour du personnage)
-    player_light_radius = 65  # Rayon de la lumière autour du personnage
+    player_light_radius = int(65 * scale_multiplier)  # Rayon de la lumière autour du personnage
     pygame.draw.circle(mask, (0, 0, 0, 0), (player_screen_x, player_screen_y), player_light_radius)
 
     # Appliquer le masque à l'écran
@@ -301,15 +303,15 @@ class Ennemi:
     def __init__(self, x, y, size=64):
         self.x = x
         self.y = y
-        self.size = size
+        self.size = int(64 * scale_multiplier)
         self.speed = 5
         self.direction = random.choice(['haut', 'bas', 'gauche', 'droite'])
         self.timer = 0
         self.time_in_light = 0  # Temps passé dans le cône de lumière
         self.images = [
-            pygame.image.load('images/ennemi2_1.png'),
-            pygame.image.load('images/ennemi2_2.png'),
-            pygame.image.load('images/ennemi2_3.png')
+            pygame.image.load('images/ennemi_1.png'),
+            pygame.image.load('images/ennemi_2.png'),
+            pygame.image.load('images/ennemi_3.png')
         ]
         self.images = [pygame.transform.scale(img, (self.size, self.size)) for img in self.images]
         self.current_image_index = 0
@@ -378,7 +380,7 @@ class Ennemi:
     def deposer_moisissure(self):
         """Dépose de la moisissure à la position actuelle de l'ennemi."""
         moisissures.append((self.x, self.y))
-        moisissure_colliders.append(pygame.Rect(self.x, self.y, 64, 64))
+        moisissure_colliders.append(pygame.Rect(self.x, self.y, int(64 * scale_multiplier), int(64 * scale_multiplier)))
 
     
 
@@ -412,17 +414,17 @@ def nettoyer_moisissure():
     global bacteries_nettoyees
     mouse_x, mouse_y = pygame.mouse.get_pos()
     temps_actuel = pygame.time.get_ticks()
-    moisissures_a_supprimer = []
-    for moisissure in moisissures:
+    for moisissure in moisissures[:]:
         moisissure_screen_x = moisissure[0] - camera_x
         moisissure_screen_y = moisissure[1] - camera_y
         distance = math.sqrt((mouse_x - moisissure_screen_x) ** 2 + (mouse_y - moisissure_screen_y) ** 2)
-        if distance < 75:  # Si la souris est suffisamment proche de la moisissure
+        if distance < int(75 * scale_multiplier):  # Si la souris est suffisamment proche de la moisissure
             if pygame.mouse.get_pressed()[0]:  # Si le bouton gauche de la souris est enfoncé
                 if moisissure not in nettoyage_temps_debut:
                     nettoyage_temps_debut[moisissure] = temps_actuel
                 elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
-                    moisissures_a_supprimer.append(moisissure)
+                    moisissures.remove(moisissure)
+                    supprimer_collider_moisissure(moisissure)
                     del nettoyage_temps_debut[moisissure]
                     bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:
@@ -432,17 +434,13 @@ def nettoyer_moisissure():
             if moisissure in nettoyage_temps_debut:
                 del nettoyage_temps_debut[moisissure]
 
-    for moisissure in moisissures_a_supprimer:
-        moisissures.remove(moisissure)
-        supprimer_collider_moisissure(moisissure)
-
 spawn_timer = 0
 spawn_interval = 5  # Intervalle de génération des ennemis en secondes
 
 dialogues = [
-    "Oh non ! Pas encore...",
-    "Je dois trouver les derniers ennemis.",
-    "Il faut que je sauve le musée !"
+    "Oh non ! Pas encore !",
+    "Je dois trouver les  derniers ennemis !",
+    "Je dois trouver un moyen de sortir d'ici !"
 ]
 current_dialogue_index = 0
 show_dialogue = True
@@ -467,8 +465,8 @@ def draw_dialogue():
 
     if show_dialogue and current_dialogue_index < len(dialogues):
         current_time = pygame.time.get_ticks()
-        font = pygame.font.Font(None, 36)
-        instruction_font = pygame.font.Font(None, 24)
+        font = pygame.font.Font(None, int(36*scale_multiplier))
+        instruction_font = pygame.font.Font(None, int(24*scale_multiplier))
         
         dialogue_text = dialogues[current_dialogue_index]
         instruction_text = "Appuyez sur 'Espace' pour continuer"
@@ -493,8 +491,8 @@ def draw_dialogue():
         dialogue_surface = font.render(displayed_text, True, (0, 0, 0))
         instruction_surface = instruction_font.render(instruction_text, True, (0, 0, 0))
         
-        dialogue_rect = dialogue_surface.get_rect(topleft=(20, HAUTEUR_ECRAN - 100))
-        instruction_rect = instruction_surface.get_rect(topleft=(20, dialogue_rect.bottom + 5))
+        dialogue_rect = dialogue_surface.get_rect(topleft=(int(20 * scale_multiplier), HAUTEUR_ECRAN - int(100 * scale_multiplier)))
+        instruction_rect = instruction_surface.get_rect(topleft=(int(20 * scale_multiplier), dialogue_rect.bottom + int(5 * scale_multiplier)))
         
         # Calculer la taille totale du cadre
         total_width = max(dialogue_rect.width, instruction_rect.width) + 20
@@ -512,7 +510,7 @@ def draw_dialogue():
         FENETRE.blit(dialogue_surface, (frame_rect.x + 10, frame_rect.y + 10))
         FENETRE.blit(instruction_surface, (frame_rect.x + 10, frame_rect.y + dialogue_rect.height + 15))
 
-VISIBILITY_DISTANCE = 100  # Distance à laquelle les ennemis deviennent visibles
+VISIBILITY_DISTANCE = int(100 * scale_multiplier)
 
 def afficher_menu_pause():
     """Affiche le menu de pause."""
@@ -523,8 +521,8 @@ def afficher_menu_pause():
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     
     # Redimensionner les images des boutons pour qu'elles aient la taille souhaitée
-    largeur_bouton = 200  # Largeur souhaitée pour les boutons
-    hauteur_bouton = 110   # Hauteur souhaitée pour les boutons
+    largeur_bouton = int(200*scale_multiplier)  # Largeur souhaitée pour les boutons
+    hauteur_bouton = int(110*scale_multiplier)   # Hauteur souhaitée pour les boutons
     image_controles = pygame.transform.scale(image_controles, (largeur_bouton, hauteur_bouton))
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
     
@@ -575,14 +573,14 @@ def afficher_menu_pause():
         clock.tick(30)
 
 # Charger et redimensionner les images des touches
-touche_Z = pygame.transform.scale(pygame.image.load('images/touche_Z.png').convert_alpha(), (64, 64))
-touche_S = pygame.transform.scale(pygame.image.load('images/touche_S.png').convert_alpha(), (64, 64))
-touche_D = pygame.transform.scale(pygame.image.load('images/touche_D.png').convert_alpha(), (64, 64))
-touche_Q = pygame.transform.scale(pygame.image.load('images/touche_Q.png').convert_alpha(), (64, 64))
-touche_Echap = pygame.transform.scale(pygame.image.load('images/touche_Echap.png').convert_alpha(), (64, 64))
-touche_E = pygame.transform.scale(pygame.image.load('images/touche_E.png').convert_alpha(), (64, 64))
-touche_CliqueDroit = pygame.transform.scale(pygame.image.load('images/touche_CliqueDroit.png').convert_alpha(), (64, 64))
-touche_CliqueGauche = pygame.transform.scale(pygame.image.load('images/touche_CliqueGauche.png').convert_alpha(), (64, 64))
+touche_Z = pygame.transform.scale(pygame.image.load('images/touche_Z.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_S = pygame.transform.scale(pygame.image.load('images/touche_S.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_D = pygame.transform.scale(pygame.image.load('images/touche_D.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_Q = pygame.transform.scale(pygame.image.load('images/touche_Q.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_Echap = pygame.transform.scale(pygame.image.load('images/touche_Echap.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_E = pygame.transform.scale(pygame.image.load('images/touche_E.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_CliqueDroit = pygame.transform.scale(pygame.image.load('images/touche_CliqueDroit.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_CliqueGauche = pygame.transform.scale(pygame.image.load('images/touche_CliqueGauche.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
 
 def draw_text_with_outline(surface, text, font, color, outline_color, pos, outline_width=2):
     text_surface = font.render(text, True, color)
@@ -597,7 +595,7 @@ def draw_text_with_outline(surface, text, font, color, outline_color, pos, outli
 def afficher_controles():
     """Affiche une fenêtre avec les contrôles du jeu."""
     controles_actif = True
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, int(36*scale_multiplier))
     controles = [
         ("Aller en haut", touche_Z),
         ("Aller en bas", touche_S),
@@ -658,11 +656,11 @@ def afficher_controles():
                     afficher_menu_pause
 
 def draw_counters():
-    font = pygame.font.Font(None, 40)
+    font = pygame.font.Font(None, int(40*scale_multiplier))
     text_ennemis = font.render(f"Ennemis tués: {ennemis_tues}", True, (255, 255, 255))
     text_bacteries = font.render(f"Bactéries nettoyées: {bacteries_nettoyees}", True, (255, 255, 255))
-    FENETRE.blit(text_ennemis, (20, 20))
-    FENETRE.blit(text_bacteries, (20, 60))
+    FENETRE.blit(text_ennemis, (int(20 * scale_multiplier), int(20 * scale_multiplier)))
+    FENETRE.blit(text_bacteries, (int(20 * scale_multiplier), int(60 * scale_multiplier)))
 
 
 def win():
@@ -671,8 +669,8 @@ def win():
    
     # Charger l'image du bouton quitter
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
-    largeur_bouton = 200  # Largeur souhaitée pour le bouton
-    hauteur_bouton = 110  # Hauteur souhaitée pour le bouton
+    largeur_bouton = int(200 * scale_multiplier)  # Largeur souhaitée pour le bouton
+    hauteur_bouton = int(110 * scale_multiplier)  # Hauteur souhaitée pour le bouton
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
         
     bouton_quitter = Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
@@ -681,7 +679,7 @@ def win():
         FENETRE.fill((0, 0, 0))  # Remplir l'écran de noir
         
         # Afficher le texte "Vous avez gagné !"
-        font = pygame.font.Font(None, 74)
+        font = pygame.font.Font(None, int(74 * scale_multiplier))
         text_surface = font.render("Vous avez gagné !", True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN // 2 - 60))
         FENETRE.blit(text_surface, text_rect)
@@ -864,6 +862,14 @@ def main():
             FENETRE.blit(mask, (0, 0))
             cone_points = []
 
+        # Dessiner les ennemis visibles dans le cercle lumineux
+        for ennemi in ennemis:
+            ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
+            ennemi_screen_y = ennemi.y - camera_y + ennemi.size // 2
+            distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
+            if distance_to_player < 65:  # Si l'ennemi est dans le cercle lumineux
+                FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))
+
         draw_battery()
 
         draw_health_bar()  # Afficher la barre de vie
@@ -872,7 +878,7 @@ def main():
             pygame.quit()
 
 
-        # Mettre à jour les ennemis et vérifier s'ils sont dans le cône de lumière ou dans le cercle lumineux
+        # Mettre à jour les ennemis et vérifier s'ils sont dans le cône de lumière
         for ennemi in ennemis[:]:
             ennemi.ennemiIA(x, y, dt)
             ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
@@ -880,7 +886,7 @@ def main():
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
 
             # Vérifier si l'ennemi est dans le cône de lumière ou dans le cercle lumineux autour du joueur
-            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) or distance_to_player < 65:
+            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) or distance_to_player < VISIBILITY_DISTANCE:
                 ennemi.time_in_light += dt if cone_active else 0  # Incrémenter uniquement si le cône est actif
                 ennemi.animation_timer += dt
                 ennemi.frozen = cone_active  # Figer l'ennemi uniquement si le cône est actif

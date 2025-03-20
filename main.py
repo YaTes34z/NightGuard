@@ -5,11 +5,16 @@ import niveau_1
 import niveau_2
 import pygame.mixer
 
+
 pygame.init()
 
 # Constantes de la fenêtre
 info = pygame.display.Info()
 LARGEUR_ECRAN, HAUTEUR_ECRAN = info.current_w, info.current_h
+
+# Calculer un multiplicateur basé sur la hauteur de l'écran
+base_height = 768  # Hauteur de référence
+scale_multiplier = HAUTEUR_ECRAN / base_height
 
 try:
     FENETRE = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.FULLSCREEN)
@@ -40,7 +45,7 @@ class Bouton:
         if self.image:
             self.rect = self.image.get_rect(topleft=position)
         else:
-            self.rect = pygame.Rect(position[0], position[1], 100, 50)  # Taille par défaut pour un bouton sans image
+            self.rect = pygame.Rect(position[0], position[1], int(100*scale_multiplier), int(50*scale_multiplier))  # Taille par défaut pour un bouton sans image
         self.couleur = (200, 0, 0)  # Rouge par défaut
         self.couleur_hover = (255, 50, 50)  # Rouge clair pour hover
 
@@ -50,7 +55,7 @@ class Bouton:
             surface.blit(self.image, self.rect.topleft)
         else:
             pygame.draw.rect(surface, couleur, self.rect, border_radius=5)
-            font = pygame.font.Font(None, 36)
+            font = pygame.font.Font(None, int(36*scale_multiplier))
             texte_surface = font.render(self.texte, True, (255, 255, 255))
             texte_rect = texte_surface.get_rect(center=self.rect.center)
             surface.blit(texte_surface, texte_rect)
@@ -72,7 +77,7 @@ def jouer_cinematique(niveau):
     fps = cap.get(cv2.CAP_PROP_FPS)
     clock = pygame.time.Clock()
     son_active = True
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, int(36*scale_multiplier))
     echap_appuye = False
     temps_appui = 0
     
@@ -93,8 +98,8 @@ def jouer_cinematique(niveau):
         # Afficher le cercle de progression pour passer la cinématique
         if echap_appuye:
             temps_appui += clock.get_time()
-            pygame.draw.circle(FENETRE, (255, 255, 255), (50, HAUTEUR_ECRAN - 50), 20, 2)
-            pygame.draw.arc(FENETRE, (255, 255, 255), (30, HAUTEUR_ECRAN - 70, 40, 40), 0, (temps_appui / 2000) * 2 * 3.14159, 4)
+            pygame.draw.circle(FENETRE, (255, 255, 255), (int(50*scale_multiplier), HAUTEUR_ECRAN - int(50*scale_multiplier)), int(20*scale_multiplier), int(2*scale_multiplier))
+            pygame.draw.arc(FENETRE, (255, 255, 255), (int(30*scale_multiplier), HAUTEUR_ECRAN - int(70*scale_multiplier), int(40*scale_multiplier), int(40*scale_multiplier)), 0, (temps_appui / 2000) * 2 * 3.14159, int(4*scale_multiplier))
             if temps_appui >= 2000:
                 break
         else:
@@ -150,20 +155,20 @@ def afficher_menu_principal():
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     
     # Redimensionner les images des boutons pour qu'elles aient la taille souhaitée
-    largeur_bouton = 200  # Largeur souhaitée pour les boutons
-    hauteur_bouton = 110   # Hauteur souhaitée pour les boutons
+    largeur_bouton = int(200*scale_multiplier)  # Largeur souhaitée pour les boutons
+    hauteur_bouton = int(110*scale_multiplier)   # Hauteur souhaitée pour les boutons
     image_niveau_1 = pygame.transform.scale(image_niveau_1, (largeur_bouton, hauteur_bouton))
     image_niveau_2 = pygame.transform.scale(image_niveau_2, (largeur_bouton, hauteur_bouton))
     image_controles = pygame.transform.scale(image_controles, (largeur_bouton, hauteur_bouton))
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
     
     boutons = [
-        Bouton("Niveau 1", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 140), lancer_niveau_1, image=image_niveau_1),
-        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - 140), reinitialiser_niveau_1),
-        Bouton("Niveau 2", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 20), lancer_niveau_2, image=image_niveau_2),
-        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - 20), reinitialiser_niveau_2),
-        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 100), afficher_controles, image=image_controles),
-        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 220), lambda: pygame.quit() or sys.exit(), image=image_quitter)
+        Bouton("Niveau 1", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier)), lancer_niveau_1, image=image_niveau_1),
+        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier)), reinitialiser_niveau_1),
+        Bouton("Niveau 2", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), lancer_niveau_2, image=image_niveau_2),
+        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), reinitialiser_niveau_2),
+        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(100*scale_multiplier)), afficher_controles, image=image_controles),
+        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(220*scale_multiplier)), lambda: pygame.quit() or sys.exit(), image=image_quitter)
     ]
     
     while True:
@@ -185,14 +190,14 @@ def afficher_menu_principal():
         clock.tick(30)
 
 # Charger et redimensionner les images des touches
-touche_Z = pygame.transform.scale(pygame.image.load('images/touche_Z.png').convert_alpha(), (64, 64))
-touche_S = pygame.transform.scale(pygame.image.load('images/touche_S.png').convert_alpha(), (64, 64))
-touche_D = pygame.transform.scale(pygame.image.load('images/touche_D.png').convert_alpha(), (64, 64))
-touche_Q = pygame.transform.scale(pygame.image.load('images/touche_Q.png').convert_alpha(), (64, 64))
-touche_Echap = pygame.transform.scale(pygame.image.load('images/touche_Echap.png').convert_alpha(), (64, 64))
-touche_E = pygame.transform.scale(pygame.image.load('images/touche_E.png').convert_alpha(), (64, 64))
-touche_CliqueDroit = pygame.transform.scale(pygame.image.load('images/touche_CliqueDroit.png').convert_alpha(), (64, 64))
-touche_CliqueGauche = pygame.transform.scale(pygame.image.load('images/touche_CliqueGauche.png').convert_alpha(), (64, 64))
+touche_Z = pygame.transform.scale(pygame.image.load('images/touche_Z.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_S = pygame.transform.scale(pygame.image.load('images/touche_S.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_D = pygame.transform.scale(pygame.image.load('images/touche_D.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_Q = pygame.transform.scale(pygame.image.load('images/touche_Q.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_Echap = pygame.transform.scale(pygame.image.load('images/touche_Echap.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_E = pygame.transform.scale(pygame.image.load('images/touche_E.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_CliqueDroit = pygame.transform.scale(pygame.image.load('images/touche_CliqueDroit.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
+touche_CliqueGauche = pygame.transform.scale(pygame.image.load('images/touche_CliqueGauche.png').convert_alpha(), (int(64*scale_multiplier), int(64*scale_multiplier)))
 
 def draw_text_with_outline(surface, text, font, color, outline_color, pos, outline_width=2):
     text_surface = font.render(text, True, color)
@@ -207,7 +212,7 @@ def draw_text_with_outline(surface, text, font, color, outline_color, pos, outli
 def afficher_controles():
     """Affiche une fenêtre avec les contrôles du jeu."""
     controles_actif = True
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, int(36*scale_multiplier))
     controles = [
         ("Aller en haut", touche_Z),
         ("Aller en bas", touche_S),
@@ -219,7 +224,7 @@ def afficher_controles():
         ("Nettoyer la moisissure", touche_CliqueGauche)
     ]
     
-    bouton_retour = Bouton("Retour", (LARGEUR_ECRAN // 2 - 90, HAUTEUR_ECRAN - 100), afficher_menu_principal)
+    bouton_retour = Bouton("Retour", (LARGEUR_ECRAN // 2 - int(90*scale_multiplier), HAUTEUR_ECRAN - int(100*scale_multiplier)), afficher_menu_principal)
     
     while controles_actif:
         fond_controles = pygame.image.load("images/fond.jpg").convert()
@@ -245,11 +250,11 @@ def afficher_controles():
         
         for i, (texte, image) in enumerate(controles):
             if i < 4:
-                FENETRE.blit(image, (x_offset_left - 70, y_offset_left - 32))  # Ajustement pour centrer l'image
+                FENETRE.blit(image, (x_offset_left - int(70*scale_multiplier), y_offset_left - int(32*scale_multiplier)))  # Ajustement pour centrer l'image
                 draw_text_with_outline(FENETRE, texte, font, (255, 255, 255), (0, 0, 0), (x_offset_left, y_offset_left))
                 y_offset_left += int(HAUTEUR_ECRAN * 0.15)
             else:
-                FENETRE.blit(image, (x_offset_right - 70, y_offset_right - 32))  # Ajustement pour centrer l'image
+                FENETRE.blit(image, (x_offset_right - int(70*scale_multiplier), y_offset_right - int(32*scale_multiplier)))  # Ajustement pour centrer l'image
                 draw_text_with_outline(FENETRE, texte, font, (255, 255, 255), (0, 0, 0), (x_offset_right, y_offset_right))
                 y_offset_right += int(HAUTEUR_ECRAN * 0.15)
         

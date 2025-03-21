@@ -155,13 +155,15 @@ def pause_map():
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)
+
         # Dessiner l'image du personnage
         player_image = pygame.transform.scale(marche_bas[0], (square_size // 2, square_size // 2))
         FENETRE.blit(player_image, (player_map_x - player_image.get_width() // 2, player_map_y - player_image.get_height() // 2))
+
         # Dessiner les ennemis sur la mini-map
         for ennemi in ennemis:
             ennemi_map_x = int((ennemi.x / largeur_map) * LARGEUR_ECRAN)
-            ennemi_map_y = int((ennemi.y / hauteur_map) * LARGEUR_ECRAN)
+            ennemi_map_y = int((ennemi.y / hauteur_map) * HAUTEUR_ECRAN)
 
             # Dessiner un rond rouge derrière l'image de l'ennemi
             pygame.draw.circle(FENETRE, (255, 0, 0), (ennemi_map_x, ennemi_map_y), square_size // 4 + 3)

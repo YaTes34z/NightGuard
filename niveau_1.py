@@ -429,11 +429,23 @@ def nettoyer_moisissure():
             if pygame.mouse.get_pressed()[0]:  # Si le bouton gauche de la souris est enfoncé
                 if moisissure not in nettoyage_temps_debut:
                     nettoyage_temps_debut[moisissure] = temps_actuel
-                elif temps_actuel - nettoyage_temps_debut[moisissure] >= 1500:  # 1500 ms = 1,5 secondes
-                    moisissures.remove(moisissure)
-                    supprimer_collider_moisissure(moisissure)  # Supprimer le collider correspondant
-                    del nettoyage_temps_debut[moisissure]
-                    bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
+                else:
+                    temps_ecoule = temps_actuel - nettoyage_temps_debut[moisissure]
+                    progression = min(temps_ecoule / 1500, 1)  # Progression entre 0 et 1 (1500 ms = 1,5 secondes)
+
+                    # Dessiner la barre de progression
+                    bar_width = int(50 * scale_multiplier)
+                    bar_height = int(5 * scale_multiplier)
+                    bar_x = moisissure_screen_x - bar_width // 2  # Centrer la barre horizontalement
+                    bar_y = moisissure_screen_y - int(40 * scale_multiplier)  # Positionner au-dessus de la moisissure
+                    pygame.draw.rect(FENETRE, (255, 255, 255), (bar_x, bar_y, bar_width, bar_height))  # Fond blanc
+                    pygame.draw.rect(FENETRE, (0, 255, 0), (bar_x, bar_y, int(bar_width * progression), bar_height))  # Barre verte
+
+                    if progression >= 1:  # Si la progression est terminée
+                        moisissures.remove(moisissure)
+                        supprimer_collider_moisissure(moisissure)  # Supprimer le collider correspondant
+                        del nettoyage_temps_debut[moisissure]
+                        bacteries_nettoyees += 1  # Incrémenter le compteur de bactéries nettoyées
             else:
                 if moisissure in nettoyage_temps_debut:
                     del nettoyage_temps_debut[moisissure]

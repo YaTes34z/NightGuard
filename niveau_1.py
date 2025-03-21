@@ -743,6 +743,16 @@ def loose():
                 return  # Retourner au jeu
             
         clock.tick(30)
+temps_restant = 60
+
+def draw_timer():
+    """Affiche le minuteur en haut à droite de l'écran."""
+    font = pygame.font.Font(None, int(40 * scale_multiplier))
+    minutes = int(temps_restant // 60)
+    seconds = int(temps_restant % 60)
+    timer_text = f"{minutes:02}:{seconds:02}"
+    text_surface = font.render(timer_text, True, (255, 255, 255))
+    FENETRE.blit(text_surface, (LARGEUR_ECRAN - int(120 * scale_multiplier), int(20 * scale_multiplier)))
 
 def reinitialiser():
     """Réinitialise toutes les variables du niveau 1 à leur état initial."""
@@ -788,7 +798,7 @@ def reinitialiser():
     print("Niveau 1 réinitialisé.")
 
 def main():
-    global bacteries_nettoyees, fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures
+    global temps_restant, bacteries_nettoyees, fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures
 
     # Initialisation des variables
     camera_x = x - LARGEUR_ECRAN // 2 + square_size // 2
@@ -916,6 +926,8 @@ def main():
 
         draw_health_bar()  # Afficher la barre de vie
 
+        draw_timer()
+
         if player_health == 0:
             pygame.quit()
 
@@ -969,6 +981,10 @@ def main():
 
         if player_health == 0:
             loose()
+
+        temps_restant -= dt
+        if temps_restant <= 0:
+            loose() 
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()

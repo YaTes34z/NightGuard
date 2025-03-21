@@ -91,7 +91,7 @@ def jouer_cinematique(niveau):
         FENETRE.blit(frame, (0, 0))
         
         # Afficher le texte
-        text_surface = font.render("Appuyer sur Espace pour activer/désactiver le son.", True, (255, 255, 255))
+        text_surface = font.render("Appuyez sur Espace pour activer/désactiver le son.", True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN - 50))
         FENETRE.blit(text_surface, text_rect)
         

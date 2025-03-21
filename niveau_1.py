@@ -515,7 +515,7 @@ def draw_dialogue():
         FENETRE.blit(dialogue_surface, (frame_rect.x + 10, frame_rect.y + 10))
         FENETRE.blit(instruction_surface, (frame_rect.x + 10, frame_rect.y + dialogue_rect.height + 15))
 
-VISIBILITY_DISTANCE = int(100 * scale_multiplier)
+VISIBILITY_DISTANCE = int(200 * scale_multiplier)
 
 def afficher_menu_pause():
     """Affiche le menu de pause."""
@@ -909,7 +909,7 @@ def main():
             ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
             ennemi_screen_y = ennemi.y - camera_y + ennemi.size // 2
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
-            if distance_to_player < 65:  # Si l'ennemi est dans le cercle lumineux
+            if distance_to_player < VISIBILITY_DISTANCE:  # Si l'ennemi est dans le cercle lumineux
                 FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))
 
         draw_battery()
@@ -928,7 +928,7 @@ def main():
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
 
             # Vérifier si l'ennemi est dans le cône de lumière ou dans le cercle lumineux autour du joueur
-            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) or distance_to_player < VISIBILITY_DISTANCE:
+            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) :
                 ennemi.time_in_light += dt if cone_active else 0  # Incrémenter uniquement si le cône est actif
                 ennemi.animation_timer += dt
                 ennemi.frozen = cone_active  # Figer l'ennemi uniquement si le cône est actif

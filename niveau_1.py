@@ -376,6 +376,10 @@ class Ennemi:
                 self.current_image_index = (self.current_image_index + 1) % len(self.images)
                 self.image = self.images[self.current_image_index]
                 self.animation_timer = 0
+        
+        # Dépôt aléatoire de moisissure
+        if random.random() < 0.001:  # Ajuster la probabilité selon le besoin
+            self.deposer_moisissure()
 
     def deposer_moisissure(self):
         """Dépose de la moisissure à la position actuelle de l'ennemi."""

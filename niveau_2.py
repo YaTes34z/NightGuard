@@ -701,6 +701,44 @@ def win():
             
         clock.tick(30)
 
+def loose():
+    """Affiche un menu indiquant que le joueur a gagné."""
+    clock = pygame.time.Clock()
+   
+    # Charger l'image du bouton quitter
+    image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
+    largeur_bouton = int(200 * scale_multiplier)  # Largeur souhaitée pour le bouton
+    hauteur_bouton = int(110 * scale_multiplier)  # Hauteur souhaitée pour le bouton
+    image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
+        
+    bouton_quitter = Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
+    
+    while True:
+        FENETRE.fill((0, 0, 0))  # Remplir l'écran de noir
+        
+        # Afficher le texte "Vous avez gagné !"
+        font = pygame.font.Font(None, int(74 * scale_multiplier))
+        text_surface = font.render("Vous avez perdu !", True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN // 2 - 60))
+        FENETRE.blit(text_surface, text_rect)
+        
+        # Dessiner le bouton quitter
+        bouton_quitter.dessiner(FENETRE)
+        
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.clic(event.pos):
+                    bouton_quitter.action()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                return  # Retourner au jeu
+            
+        clock.tick(30)
+        
 def reinitialiser():
     """Réinitialise toutes les variables du niveau 1 à leur état initial."""
     global x, y, camera_x, camera_y, ennemis_tues, bacteries_nettoyees, moisissures, cone_active
@@ -924,6 +962,9 @@ def main():
 
         if bacteries_nettoyees>=5 and ennemis_tues>=5:
             win()
+
+        if player_health == 0:
+            loose()
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()

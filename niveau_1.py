@@ -447,7 +447,8 @@ spawn_interval = 5  # Intervalle de génération des ennemis en secondes
 dialogues = [
     "Qu'est ce qu'il s'est passé ? Où suis-je ?",
     "Je me suis fait absorber par le tableau ?",
-    "Je dois trouver un moyen de sortir d'ici !"
+    "Je dois trouver un moyen de sortir d'ici !",
+    "Je dois faire vite, il ne me reste que 100 secondes..."
 ]
 current_dialogue_index = 0
 show_dialogue = True
@@ -745,7 +746,7 @@ def loose():
                 return  # Retourner au jeu
             
         clock.tick(30)
-temps_restant = 60
+temps_restant = 100
 
 def draw_timer():
     """Affiche le minuteur en haut à droite de l'écran."""
@@ -927,8 +928,9 @@ def main():
         draw_battery()
 
         draw_health_bar()  # Afficher la barre de vie
-
-        draw_timer()
+        
+        if dialogues_termines:
+            draw_timer()
 
         if player_health == 0:
             pygame.quit()
@@ -984,9 +986,10 @@ def main():
         if player_health == 0:
             loose()
 
-        temps_restant -= dt
-        if temps_restant <= 0:
-            loose() 
+        if dialogues_termines:
+            temps_restant -= dt
+            if temps_restant <= 0:
+                loose() 
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()

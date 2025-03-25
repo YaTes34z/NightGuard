@@ -255,8 +255,8 @@ def draw_stars():
     stars_y = int(50 * scale_multiplier)  # Position juste en dessous du chrono
 
     # Taille réduite des étoiles
-    etoile_width = int(100 * scale_multiplier)
-    etoile_height = int(55 * scale_multiplier)
+    etoile_width = int(110 * scale_multiplier)
+    etoile_height = int(50 * scale_multiplier)
 
     # Redimensionner les images des étoiles pour qu'elles soient plus petites
     etoiles_3_small = pygame.transform.scale(etoiles_3, (etoile_width, etoile_height))
@@ -276,8 +276,8 @@ def draw_stars():
 
 def draw_stars_win():
     """Affiche les étoiles en fonction du temps restant, juste en dessous du chrono."""
-    stars_x = LARGEUR_ECRAN - int(1500 * scale_multiplier) 
-    stars_y = int(30 * scale_multiplier) 
+    stars_x = LARGEUR_ECRAN - int(786 * scale_multiplier) 
+    stars_y = int(150 * scale_multiplier)  
 
     # Taille réduite des étoiles
     etoile_width = int(200 * scale_multiplier)
@@ -793,7 +793,21 @@ def win():
     bouton_quitter = Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
     
     while True:
-        FENETRE.fill((0, 0, 0))  # Remplir l'écran de noir
+        fond_win = pygame.image.load("images/fond.jpg").convert()
+        fond_win = pygame.transform.scale(fond_win, (LARGEUR_ECRAN, HAUTEUR_ECRAN))
+        
+        # Convertir l'image en format compatible avec OpenCV
+        fond_win_array = pygame.surfarray.array3d(fond_win)
+        fond_win_array = cv2.cvtColor(fond_win_array, cv2.COLOR_RGB2BGR)
+        
+        # Appliquer un flou léger
+        fond_win_array = cv2.GaussianBlur(fond_win_array, (15, 15), 0)
+        
+        # Convertir l'image floue en format compatible avec Pygame
+        fond_win_array = cv2.cvtColor(fond_win_array, cv2.COLOR_BGR2RGB)
+        fond_win = pygame.surfarray.make_surface(fond_win_array)
+        
+        FENETRE.blit(fond_win, (0, 0))
         
         # Afficher le texte "Vous avez gagné !"
         font = pygame.font.Font(None, int(74 * scale_multiplier))
@@ -1096,7 +1110,7 @@ def main():
         draw_counters()
 
 
-        if bacteries_nettoyees>=5 and ennemis_tues>=5 or keys[pygame.K_SPACE]:
+        if bacteries_nettoyees>=5 and ennemis_tues>=5:
             win()
 
         if player_health == 0:

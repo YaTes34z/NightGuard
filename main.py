@@ -4,7 +4,7 @@ import cv2
 import niveau_1
 import niveau_2
 import pygame.mixer
-
+from sauvegarde import ecrire_variable, lire_variable
 
 pygame.init()
 
@@ -15,6 +15,7 @@ LARGEUR_ECRAN, HAUTEUR_ECRAN = info.current_w, info.current_h
 # Calculer un multiplicateur basé sur la hauteur de l'écran
 base_height = 768  # Hauteur de référence
 scale_multiplier = HAUTEUR_ECRAN / base_height
+
 
 try:
     FENETRE = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.FULLSCREEN)
@@ -34,6 +35,18 @@ except pygame.error as e:
 # Redimensionnement des images pour s'adapter à la résolution de l'écran
 fond = pygame.transform.scale(fond, (LARGEUR_ECRAN, HAUTEUR_ECRAN))
 logo = pygame.transform.scale(logo, (int(LARGEUR_ECRAN * 0.175), int(LARGEUR_ECRAN * 0.175)))  # 300/800 = 0.375, 150/600 = 0.25
+
+# Charger les images des étoiles
+etoiles_0 = pygame.image.load('images/etoiles0.png').convert_alpha()
+etoiles_1 = pygame.image.load('images/etoiles1.png').convert_alpha()
+etoiles_2 = pygame.image.load('images/etoiles2.png').convert_alpha()
+etoiles_3 = pygame.image.load('images/etoiles3.png').convert_alpha()
+
+# Redimensionner les images des étoiles pour s'adapter à l'interface
+etoiles_0 = pygame.transform.scale(etoiles_0, (int(100 * scale_multiplier), int(50 * scale_multiplier)))
+etoiles_1 = pygame.transform.scale(etoiles_1, (int(100 * scale_multiplier), int(50 * scale_multiplier)))
+etoiles_2 = pygame.transform.scale(etoiles_2, (int(100 * scale_multiplier), int(50 * scale_multiplier)))
+etoiles_3 = pygame.transform.scale(etoiles_3, (int(100 * scale_multiplier), int(50 * scale_multiplier)))
 
 # Boutons
 class Bouton:
@@ -128,13 +141,37 @@ def jouer_cinematique(niveau):
     cap.release()
     pygame.mixer.music.stop()
 
+def draw_etoiles_image(niveau, etoiles, bouton_rect):
+    """Affiche l'image des étoiles obtenues à gauche du bouton du niveau."""
+    if etoiles == 0:
+        etoiles_image = etoiles_0
+    elif etoiles == 1:
+        etoiles_image = etoiles_1
+    elif etoiles == 2:
+        etoiles_image = etoiles_2
+    else:
+        etoiles_image = etoiles_3
+
+    # Positionner l'image à gauche du bouton
+    etoiles_x = bouton_rect.left - int(100 * scale_multiplier)  # Décalage à gauche
+    etoiles_y = bouton_rect.centery - etoiles_image.get_height() // 2  # Centrer verticalement
+    FENETRE.blit(etoiles_image, (etoiles_x, etoiles_y))
+
+
 def lancer_niveau_1():
+    global etoiles_niveau_1
     jouer_cinematique(1)
-    niveau_1.main()
+    etoiles_obtenues = niveau_1.main()
+    if etoiles_obtenues > etoiles_niveau_1:
+        etoiles_niveau_1 = etoiles_obtenues
+    
 
 def lancer_niveau_2():
-    # jouer_cinematique(2)
-    niveau_2.main()
+    global etoiles_niveau_2
+    #jouer_cinematique(2)
+    etoiles_obtenues = niveau_2.main()
+    if etoiles_obtenues > etoiles_niveau_1:
+        etoiles_niveau_1 = etoiles_obtenues
 
 def reinitialiser_niveau_1():
     niveau_1.reinitialiser()
@@ -174,8 +211,18 @@ def afficher_menu_principal():
     while True:
         FENETRE.blit(fond, (0, 0))
         FENETRE.blit(logo, (LARGEUR_ECRAN // 2 - logo.get_width() // 2, 50))
+
         for bouton in boutons:
             bouton.dessiner(FENETRE)
+
+            if bouton.texte == "Niveau 1":
+                etoiles_obtenues1 = lire_variable("sauvegarde1.txt", "etoiles_obtenues1")
+                draw_etoiles_image(1, etoiles_obtenues1, bouton.rect)
+            
+            elif bouton.texte == "Niveau 2":
+                etoiles_obtenues2 = lire_variable("sauvegarde2.txt", "etoiles_obtenues2")
+                draw_etoiles_image(2, etoiles_obtenues2, bouton.rect)
+
         pygame.display.flip()
         
         for event in pygame.event.get():
@@ -185,6 +232,7 @@ def afficher_menu_principal():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for bouton in boutons:
                     if bouton.clic(event.pos):
+                        print(f"Bouton cliqué : {bouton.texte}")
                         bouton.action()
         
         clock.tick(30)

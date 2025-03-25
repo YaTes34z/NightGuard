@@ -5,6 +5,7 @@ import sys
 import main as accueil
 from setting import *
 import cv2
+from sauvegarde import ecrire_variable, lire_variable
 
 # Initialisation de Pygame
 pygame.init()
@@ -58,6 +59,22 @@ cadre_batterie = pygame.transform.scale(cadre_batterie, (int(350 * scale_multipl
 
 cadre_vie = pygame.image.load('images/barre_vie.png').convert_alpha()
 cadre_vie = pygame.transform.scale(cadre_vie, (int(355 * scale_multiplier), int(80 * scale_multiplier)))
+
+# Charger les images des étoiles
+etoiles_3 = pygame.image.load('images/etoiles3.png').convert_alpha()
+etoiles_2 = pygame.image.load('images/etoiles2.png').convert_alpha()
+etoiles_1 = pygame.image.load('images/etoiles1.png').convert_alpha()
+etoiles_0 = pygame.image.load('images/etoiles0.png').convert_alpha()
+
+# Redimensionner les images des étoiles
+etoiles_3 = pygame.transform.scale(etoiles_3, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
+etoiles_2 = pygame.transform.scale(etoiles_2, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
+etoiles_1 = pygame.transform.scale(etoiles_1, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
+
+# Seuils de temps pour les étoiles
+temps_3_etoiles = 80  # Temps restant pour 3 étoiles
+temps_2_etoiles = 50  # Temps restant pour 2 étoiles
+temps_1_etoiles = 20  # Temps restant pour 1 étoile
 
 # Classe Bouton
 class Bouton:
@@ -231,6 +248,68 @@ def draw_health_bar():
     fill_width = int((player_health / 100) * bar_width)
     pygame.draw.rect(FENETRE, vert if player_health > 30 else rouge, (bar_x, bar_y, fill_width, bar_height))
 
+def draw_stars():
+    """Affiche les étoiles en fonction du temps restant, juste en dessous du chrono."""
+    # Position des étoiles (alignées avec le chrono)
+    stars_x = LARGEUR_ECRAN - int(135 * scale_multiplier)  # Aligné avec le chrono
+    stars_y = int(50 * scale_multiplier)  # Position juste en dessous du chrono
+
+    # Taille réduite des étoiles
+    etoile_width = int(100 * scale_multiplier)
+    etoile_height = int(55 * scale_multiplier)
+
+    # Redimensionner les images des étoiles pour qu'elles soient plus petites
+    etoiles_3_small = pygame.transform.scale(etoiles_3, (etoile_width, etoile_height))
+    etoiles_2_small = pygame.transform.scale(etoiles_2, (etoile_width, etoile_height))
+    etoiles_1_small = pygame.transform.scale(etoiles_1, (etoile_width, etoile_height))
+    etoiles_0_small = pygame.transform.scale(etoiles_0, (etoile_width, etoile_height))
+
+    # Afficher les étoiles en fonction du temps restant
+    if temps_restant > temps_3_etoiles:
+        FENETRE.blit(etoiles_3_small, (stars_x, stars_y))
+    elif temps_restant > temps_2_etoiles:
+        FENETRE.blit(etoiles_2_small, (stars_x, stars_y))
+    elif temps_restant > temps_1_etoiles:
+        FENETRE.blit(etoiles_1_small, (stars_x, stars_y))
+    else:
+        FENETRE.blit(etoiles_0_small, (stars_x, stars_y))
+
+def draw_stars_win():
+    """Affiche les étoiles en fonction du temps restant, juste en dessous du chrono."""
+    stars_x = LARGEUR_ECRAN - int(1500 * scale_multiplier) 
+    stars_y = int(30 * scale_multiplier) 
+
+    # Taille réduite des étoiles
+    etoile_width = int(200 * scale_multiplier)
+    etoile_height = int(150 * scale_multiplier)
+
+    # Redimensionner les images des étoiles pour qu'elles soient plus petites
+    etoiles_3_small = pygame.transform.scale(etoiles_3, (etoile_width, etoile_height))
+    etoiles_2_small = pygame.transform.scale(etoiles_2, (etoile_width, etoile_height))
+    etoiles_1_small = pygame.transform.scale(etoiles_1, (etoile_width, etoile_height))
+    etoiles_0_small = pygame.transform.scale(etoiles_0, (etoile_width, etoile_height))
+
+    # Afficher les étoiles en fonction du temps restant
+    if temps_restant > temps_3_etoiles:
+        FENETRE.blit(etoiles_3_small, (stars_x, stars_y))
+    elif temps_restant > temps_2_etoiles:
+        FENETRE.blit(etoiles_2_small, (stars_x, stars_y))
+    elif temps_restant > temps_1_etoiles:
+        FENETRE.blit(etoiles_1_small, (stars_x, stars_y))
+    else:
+        FENETRE.blit(etoiles_0_small, (stars_x, stars_y))
+
+def calculer_etoiles(temps_restant):
+
+    if temps_restant > 80:
+        return 3
+    elif temps_restant > 50:
+        return 2
+    elif temps_restant > 20:
+        return 1
+    else:
+        return 0
+    
 # Fonction pour créer et afficher le cône de lumière de la lampe-torche   
 def cone_lumiere(dt):
     """Affiche un cône de lumière avec un dégradé basé uniquement sur la distance et retourne les coordonnées du cône."""
@@ -725,6 +804,11 @@ def win():
         
         # Dessiner le bouton quitter
         bouton_quitter.dessiner(FENETRE)
+
+        etoiles_obtenues1 = calculer_etoiles(temps_restant)
+        #print("Etoiles restantes :", etoiles_obtenues1)
+        ecrire_variable("sauvegarde1.txt", "etoiles_obtenues1", etoiles_obtenues1)
+        draw_stars_win()
         
         pygame.display.flip()
         
@@ -828,6 +912,8 @@ def reinitialiser():
     # Réinitialisation du timer de spawn
     spawn_timer = 0
     spawn_interval = 5
+
+    ecrire_variable("sauvegarde1.txt", "etoiles_obtenues1", 0)
 
     print("Niveau 1 réinitialisé.")
 
@@ -1010,21 +1096,23 @@ def main():
         # Afficher les compteurs
         draw_counters()
 
-
-        if bacteries_nettoyees>=5 and ennemis_tues>=5:
+    
+        if bacteries_nettoyees >= 5 and ennemis_tues >= 5:
             win()
-
+            
+            
         if player_health == 0:
             loose()
 
         if dialogues_termines:
             temps_restant -= dt
+            draw_stars()
             if temps_restant <= 0:
                 loose() 
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()
-
+    
     # Quitter Pygame proprement
     pygame.quit()
 

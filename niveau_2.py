@@ -40,10 +40,6 @@ marche_gauche = [pygame.transform.scale(img, (square_size, square_size)) for img
 marche_haut = [pygame.transform.scale(img, (square_size, square_size)) for img in marche_haut]
 marche_bas = [pygame.transform.scale(img, (square_size, square_size)) for img in marche_bas]
 
-# Charger les images pour la barre de vie et la barre de batterie
-image_barre_vie = pygame.image.load('images/barre_vie.png').convert_alpha()
-image_barre_batterie = pygame.image.load('images/barre_batterie.png').convert_alpha()
-
 # Charger l'image de fond
 fond = pygame.image.load('images/map_niveau2.png')
 
@@ -55,6 +51,13 @@ current_frame = 0
 frame_delay = 5  # Nombre de frames avant de changer d'image
 frame_count = 0
 current_direction = "bas"
+
+# Charger les images des cadres pour la barre de vie et la batterie
+cadre_batterie = pygame.image.load('images/barre_batterie.png').convert_alpha()
+cadre_batterie = pygame.transform.scale(cadre_batterie, (int(350 * scale_multiplier), int(85 * scale_multiplier)))
+
+cadre_vie = pygame.image.load('images/barre_vie.png').convert_alpha()
+cadre_vie = pygame.transform.scale(cadre_vie, (int(355 * scale_multiplier), int(80 * scale_multiplier)))
 
 # Classe Bouton
 class Bouton:
@@ -153,11 +156,13 @@ def pause_map():
         FENETRE.blit(mini_map, (0, 0))
 
         # Calculer la position du joueur sur la mini-map
-        player_map_x = int((x / largeur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers la droite
-        player_map_y = int((y / hauteur_map) * LARGEUR_ECRAN) + square_size // 4  # Décalage vers le bas
+        player_map_x = int((x / largeur_map) * LARGEUR_ECRAN) + square_size//4
+        player_map_y = int((y / hauteur_map) * HAUTEUR_ECRAN) + square_size//4
+
 
         # Dessiner un rond de couleur derrière l'image du personnage
         pygame.draw.circle(FENETRE, (0, 255, 0), (player_map_x, player_map_y), square_size // 4 + 3)
+
         # Dessiner l'image du personnage
         player_image = pygame.transform.scale(marche_bas[0], (square_size // 2, square_size // 2))
         FENETRE.blit(player_image, (player_map_x - player_image.get_width() // 2, player_map_y - player_image.get_height() // 2))
@@ -165,7 +170,7 @@ def pause_map():
         # Dessiner les ennemis sur la mini-map
         for ennemi in ennemis:
             ennemi_map_x = int((ennemi.x / largeur_map) * LARGEUR_ECRAN)
-            ennemi_map_y = int((ennemi.y / hauteur_map) * LARGEUR_ECRAN)
+            ennemi_map_y = int((ennemi.y / hauteur_map) * HAUTEUR_ECRAN)
 
             # Dessiner un rond rouge derrière l'image de l'ennemi
             pygame.draw.circle(FENETRE, (255, 0, 0), (ennemi_map_x, ennemi_map_y), square_size // 4 + 3)
@@ -193,28 +198,38 @@ battery = 100.0  # Batterie en pourcentage
 battery_drain_rate = 5.0  # Pourcentage par seconde
 clock = pygame.time.Clock()
 
-# Gestion de l'affichage de la batterie de la lampe-torche
+# Fonction pour dessiner la batterie
 def draw_battery():
-    """Affiche la barre de batterie en bas au centre de l'écran."""
-    bar_width = int((battery / 100) * 300 * scale_multiplier)  # Largeur proportionnelle à la batterie
-    bar_height = int(30 * scale_multiplier)  # Hauteur fixe
+    """Affiche la barre de batterie en bas et au centre de l'écran."""
+    bar_width = int(300 * scale_multiplier)
+    bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
-    bar_y = HAUTEUR_ECRAN - int(70 * scale_multiplier)
+    bar_y = HAUTEUR_ECRAN - 40  # Position en bas de l'écran
 
-    # Redimensionner l'image de la barre de batterie
-    barre_batterie_redimensionnee = pygame.transform.scale(image_barre_batterie, (bar_width, bar_height))
-    FENETRE.blit(barre_batterie_redimensionnee, (bar_x, bar_y))
+    # Afficher le cadre de la batterie
+    cadre_x = bar_x -25 # Ajuster pour centrer le cadre autour de la barre
+    cadre_y = bar_y -32
+    FENETRE.blit(cadre_batterie, (cadre_x, cadre_y))
+
+    # Dessiner la barre de batterie
+    fill_width = int((battery / 100) * bar_width)
+    pygame.draw.rect(FENETRE, vert if battery > 30 else rouge, (bar_x, bar_y, fill_width, bar_height))
 
 def draw_health_bar():
-    """Affiche la barre de vie en haut au centre de l'écran."""
-    bar_width = int((player_health / 100) * 300 * scale_multiplier)  # Largeur proportionnelle à la santé
-    bar_height = int(30 * scale_multiplier)  # Hauteur fixe
+    """Affiche la barre de vie en haut et au centre de l'écran."""
+    bar_width = int(300 * scale_multiplier)
+    bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
-    bar_y = int(20 * scale_multiplier)
+    bar_y = 20  # Position en haut de l'écran
 
-    # Redimensionner l'image de la barre de vie
-    barre_vie_redimensionnee = pygame.transform.scale(image_barre_vie, (bar_width, bar_height))
-    FENETRE.blit(barre_vie_redimensionnee, (bar_x, bar_y))
+    # Afficher le cadre de la barre de vie
+    cadre_x = bar_x -25 # Ajuster pour centrer le cadre autour de la barre
+    cadre_y = bar_y -29
+    FENETRE.blit(cadre_vie, (cadre_x, cadre_y))
+
+    # Dessiner la barre de vie
+    fill_width = int((player_health / 100) * bar_width)
+    pygame.draw.rect(FENETRE, vert if player_health > 30 else rouge, (bar_x, bar_y, fill_width, bar_height))
 
 # Fonction pour créer et afficher le cône de lumière de la lampe-torche   
 def cone_lumiere(dt):
@@ -231,7 +246,7 @@ def cone_lumiere(dt):
 
     # Créer un masque semi-transparent
     mask = pygame.Surface((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.SRCALPHA)
-    mask.fill((0, 0, 0, 250))  # Ombre globale sur toute la scène
+    mask.fill((0, 0, 0, 245))  # Ombre globale sur toute la scène
 
     cone_points = []
 
@@ -240,9 +255,9 @@ def cone_lumiere(dt):
         for i in range(cone_length, 0, -5):  # De l'intérieur vers l'extérieur
             # Calcul de l'opacité qui diminue avec la distance
             distance_factor = i / cone_length
-            alpha = int(250 * (1 - distance_factor))  # Plus loin, moins intense
+            alpha = int(245 * (1 - distance_factor))  # Plus loin, moins intense
 
-            color = (0, 0, 0, 250 - alpha)  # Noir avec un dégradé d'opacité, minimum à 0
+            color = (0, 0, 0, 245 - alpha)  # Noir avec un dégradé d'opacité, minimum à 0
 
             # Calcul du cône de lumière
             points = [(player_screen_x, player_screen_y)]  # Point de départ du cône (joueur)
@@ -382,6 +397,10 @@ class Ennemi:
                 self.current_image_index = (self.current_image_index + 1) % len(self.images)
                 self.image = self.images[self.current_image_index]
                 self.animation_timer = 0
+        
+        # Dépôt aléatoire de moisissure
+        if random.random() < 0.001:  # Ajuster la probabilité selon le besoin
+            self.deposer_moisissure()
 
     def deposer_moisissure(self):
         """Dépose de la moisissure à la position actuelle de l'ennemi."""
@@ -411,11 +430,12 @@ def spawn_ennemi():
 # Dictionnaire pour stocker le temps de début de nettoyage pour chaque moisissure
 nettoyage_temps_debut = {}
 
+
 # Fonction pour supprimer le collider correspondant à une moisissure
 def supprimer_collider_moisissure(moisissure):
-    moisissure_colliders[:] = [collider for collider in moisissure_colliders if collider.topleft != moisissure]
+    moisissure_colliders[:] = [collider for collider in moisissure_colliders if not collider.collidepoint(moisissure)]
 
-# Fonction pour afficher la moisissure laissée par les ennemis à leur mort
+#Fonction pour afficher la moisissure laissée par les ennemis à leur mort
 def nettoyer_moisissure():
     global bacteries_nettoyees
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -451,7 +471,6 @@ def nettoyer_moisissure():
         else:
             if moisissure in nettoyage_temps_debut:
                 del nettoyage_temps_debut[moisissure]
-
 
 spawn_timer = 0
 spawn_interval = 5  # Intervalle de génération des ennemis en secondes
@@ -529,7 +548,7 @@ def draw_dialogue():
         FENETRE.blit(dialogue_surface, (frame_rect.x + 10, frame_rect.y + 10))
         FENETRE.blit(instruction_surface, (frame_rect.x + 10, frame_rect.y + dialogue_rect.height + 15))
 
-VISIBILITY_DISTANCE = int(100 * scale_multiplier)
+VISIBILITY_DISTANCE = int(200 * scale_multiplier)
 
 def afficher_menu_pause():
     """Affiche le menu de pause."""
@@ -757,8 +776,8 @@ def loose():
                 return  # Retourner au jeu
             
         clock.tick(30)
+temps_restant = 100
 
-temps_restant = 60
 def draw_timer():
     """Affiche le minuteur en haut à droite de l'écran."""
     font = pygame.font.Font(None, int(40 * scale_multiplier))
@@ -767,7 +786,6 @@ def draw_timer():
     timer_text = f"{minutes:02}:{seconds:02}"
     text_surface = font.render(timer_text, True, (255, 255, 255))
     FENETRE.blit(text_surface, (LARGEUR_ECRAN - int(120 * scale_multiplier), int(20 * scale_multiplier)))
-
 
 def reinitialiser():
     """Réinitialise toutes les variables du niveau 1 à leur état initial."""
@@ -822,7 +840,6 @@ def main():
     bacteries_nettoyees = 0
     moisissures = []
     cone_active = False
-
     while running:
         dt = clock.tick(30) / 1000.0  # Limiter le framerate à 30 FPS et obtenir un dt constant
 
@@ -922,7 +939,7 @@ def main():
         else:
             # Assombrir les ennemis lorsque la batterie est épuisée
             mask = pygame.Surface((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.SRCALPHA)
-            mask.fill((0, 0, 0, 250))
+            mask.fill((0, 0, 0, 245))
             player_screen_x = x - camera_x + square_size // 2
             player_screen_y = y - camera_y + square_size // 2
             player_light_radius = 65  # Rayon de la lumière autour du personnage
@@ -935,12 +952,15 @@ def main():
             ennemi_screen_x = ennemi.x - camera_x + ennemi.size // 2
             ennemi_screen_y = ennemi.y - camera_y + ennemi.size // 2
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
-            if distance_to_player < 65:  # Si l'ennemi est dans le cercle lumineux
+            if distance_to_player < VISIBILITY_DISTANCE:  # Si l'ennemi est dans le cercle lumineux
                 FENETRE.blit(ennemi.image, (ennemi.x - camera_x, ennemi.y - camera_y))
 
         draw_battery()
 
         draw_health_bar()  # Afficher la barre de vie
+        
+        if dialogues_termines:
+            draw_timer()
 
         if player_health == 0:
             pygame.quit()
@@ -954,7 +974,7 @@ def main():
             distance_to_player = math.sqrt((ennemi_screen_x - player_screen_x) ** 2 + (ennemi_screen_y - player_screen_y) ** 2)
 
             # Vérifier si l'ennemi est dans le cône de lumière ou dans le cercle lumineux autour du joueur
-            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) or distance_to_player < VISIBILITY_DISTANCE:
+            if (cone_active and is_point_in_cone(ennemi_screen_x, ennemi_screen_y, cone_points)) :
                 ennemi.time_in_light += dt if cone_active else 0  # Incrémenter uniquement si le cône est actif
                 ennemi.animation_timer += dt
                 ennemi.frozen = cone_active  # Figer l'ennemi uniquement si le cône est actif
@@ -989,9 +1009,6 @@ def main():
         # Afficher les compteurs
         draw_counters()
 
-        if dialogues_termines:
-            draw_timer()
-
 
         if bacteries_nettoyees>=5 and ennemis_tues>=5:
             win()
@@ -1002,7 +1019,7 @@ def main():
         if dialogues_termines:
             temps_restant -= dt
             if temps_restant <= 0:
-                loose()
+                loose() 
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()

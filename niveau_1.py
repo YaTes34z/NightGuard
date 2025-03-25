@@ -40,10 +40,6 @@ marche_gauche = [pygame.transform.scale(img, (square_size, square_size)) for img
 marche_haut = [pygame.transform.scale(img, (square_size, square_size)) for img in marche_haut]
 marche_bas = [pygame.transform.scale(img, (square_size, square_size)) for img in marche_bas]
 
-# Charger les images pour la barre de vie et la barre de batterie
-image_barre_vie = pygame.image.load('images/barre_vie.png').convert_alpha()
-image_barre_batterie = pygame.image.load('images/barre_batterie.png').convert_alpha()
-
 # Charger l'image de fond
 fond = pygame.image.load('images/map_niveau1.png')
 
@@ -55,6 +51,13 @@ current_frame = 0
 frame_delay = 5  # Nombre de frames avant de changer d'image
 frame_count = 0
 current_direction = "bas"
+
+# Charger les images des cadres pour la barre de vie et la batterie
+cadre_batterie = pygame.image.load('images/barre_batterie.png').convert_alpha()
+cadre_batterie = pygame.transform.scale(cadre_batterie, (int(350 * scale_multiplier), int(85 * scale_multiplier)))
+
+cadre_vie = pygame.image.load('images/barre_vie.png').convert_alpha()
+cadre_vie = pygame.transform.scale(cadre_vie, (int(355 * scale_multiplier), int(80 * scale_multiplier)))
 
 # Classe Bouton
 class Bouton:
@@ -195,28 +198,38 @@ battery = 100.0  # Batterie en pourcentage
 battery_drain_rate = 5.0  # Pourcentage par seconde
 clock = pygame.time.Clock()
 
-# Gestion de l'affichage de la batterie de la lampe-torche
+# Fonction pour dessiner la batterie
 def draw_battery():
-    """Affiche la barre de batterie en bas au centre de l'écran."""
-    bar_width = int((battery / 100) * 300 * scale_multiplier)  # Largeur proportionnelle à la batterie
-    bar_height = int(30 * scale_multiplier)  # Hauteur fixe
+    """Affiche la barre de batterie en bas et au centre de l'écran."""
+    bar_width = int(300 * scale_multiplier)
+    bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
-    bar_y = HAUTEUR_ECRAN - int(70 * scale_multiplier)
+    bar_y = HAUTEUR_ECRAN - 40  # Position en bas de l'écran
 
-    # Redimensionner l'image de la barre de batterie
-    barre_batterie_redimensionnee = pygame.transform.scale(image_barre_batterie, (bar_width, bar_height))
-    FENETRE.blit(barre_batterie_redimensionnee, (bar_x, bar_y))
+    # Afficher le cadre de la batterie
+    cadre_x = bar_x -25 # Ajuster pour centrer le cadre autour de la barre
+    cadre_y = bar_y -32
+    FENETRE.blit(cadre_batterie, (cadre_x, cadre_y))
+
+    # Dessiner la barre de batterie
+    fill_width = int((battery / 100) * bar_width)
+    pygame.draw.rect(FENETRE, vert if battery > 30 else rouge, (bar_x, bar_y, fill_width, bar_height))
 
 def draw_health_bar():
-    """Affiche la barre de vie en haut au centre de l'écran."""
-    bar_width = int((player_health / 100) * 300 * scale_multiplier)  # Largeur proportionnelle à la santé
-    bar_height = int(30 * scale_multiplier)  # Hauteur fixe
+    """Affiche la barre de vie en haut et au centre de l'écran."""
+    bar_width = int(300 * scale_multiplier)
+    bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
-    bar_y = int(20 * scale_multiplier)
+    bar_y = 20  # Position en haut de l'écran
 
-    # Redimensionner l'image de la barre de vie
-    barre_vie_redimensionnee = pygame.transform.scale(image_barre_vie, (bar_width, bar_height))
-    FENETRE.blit(barre_vie_redimensionnee, (bar_x, bar_y))
+    # Afficher le cadre de la barre de vie
+    cadre_x = bar_x -25 # Ajuster pour centrer le cadre autour de la barre
+    cadre_y = bar_y -29
+    FENETRE.blit(cadre_vie, (cadre_x, cadre_y))
+
+    # Dessiner la barre de vie
+    fill_width = int((player_health / 100) * bar_width)
+    pygame.draw.rect(FENETRE, vert if player_health > 30 else rouge, (bar_x, bar_y, fill_width, bar_height))
 
 # Fonction pour créer et afficher le cône de lumière de la lampe-torche   
 def cone_lumiere(dt):
@@ -233,7 +246,7 @@ def cone_lumiere(dt):
 
     # Créer un masque semi-transparent
     mask = pygame.Surface((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.SRCALPHA)
-    mask.fill((0, 0, 0, 250))  # Ombre globale sur toute la scène
+    mask.fill((0, 0, 0, 245))  # Ombre globale sur toute la scène
 
     cone_points = []
 
@@ -242,9 +255,9 @@ def cone_lumiere(dt):
         for i in range(cone_length, 0, -5):  # De l'intérieur vers l'extérieur
             # Calcul de l'opacité qui diminue avec la distance
             distance_factor = i / cone_length
-            alpha = int(250 * (1 - distance_factor))  # Plus loin, moins intense
+            alpha = int(245 * (1 - distance_factor))  # Plus loin, moins intense
 
-            color = (0, 0, 0, 250 - alpha)  # Noir avec un dégradé d'opacité, minimum à 0
+            color = (0, 0, 0, 245 - alpha)  # Noir avec un dégradé d'opacité, minimum à 0
 
             # Calcul du cône de lumière
             points = [(player_screen_x, player_screen_y)]  # Point de départ du cône (joueur)
@@ -927,7 +940,7 @@ def main():
         else:
             # Assombrir les ennemis lorsque la batterie est épuisée
             mask = pygame.Surface((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.SRCALPHA)
-            mask.fill((0, 0, 0, 250))
+            mask.fill((0, 0, 0, 245))
             player_screen_x = x - camera_x + square_size // 2
             player_screen_y = y - camera_y + square_size // 2
             player_light_radius = 65  # Rayon de la lumière autour du personnage

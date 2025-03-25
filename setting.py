@@ -16,7 +16,7 @@ square_size = int(128 * scale_multiplier)
 # Couleurs
 blanc = (255, 255, 255)
 rouge = (255, 0, 0)
-vert = (0, 255, 0)
+vert = (9, 125, 20)
 noir = (0, 0, 0)
 
 # Angle et longueur du cône de lumière

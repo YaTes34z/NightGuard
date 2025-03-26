@@ -1,1 +1,1 @@
-etoiles_obtenues2=3
+etoiles_obtenues2=0

@@ -272,14 +272,15 @@ def afficher_controles():
         ("Nettoyer la moisissure", touche_CliqueGauche)
     ]
     
-    bouton_retour = Bouton("Retour", (LARGEUR_ECRAN // 2 - int(90*scale_multiplier), HAUTEUR_ECRAN - int(100*scale_multiplier)), afficher_menu_principal)
-    
+    bouton_retour = Bouton("Retour",((LARGEUR_ECRAN // 2) - (int(100 * scale_multiplier) // 2), HAUTEUR_ECRAN - int(100 * scale_multiplier)),afficher_menu_principal) 
+
+
     while controles_actif:
         fond_controles = pygame.image.load("images/fond.jpg").convert()
         fond_controles = pygame.transform.scale(fond_controles, (LARGEUR_ECRAN, HAUTEUR_ECRAN))
         
         # Convertir l'image en format compatible avec OpenCV
-        fond_controles_array = pygame.surfarray.array3d(fond_controles)
+        fond_controles_array = pygame.surfarray. array3d(fond_controles)
         fond_controles_array = cv2.cvtColor(fond_controles_array, cv2.COLOR_RGB2BGR)
         
         # Appliquer un flou léger
@@ -291,19 +292,25 @@ def afficher_controles():
         
         FENETRE.blit(fond_controles, (0, 0))      
 
-        y_offset_left = int(HAUTEUR_ECRAN * 0.3)
-        y_offset_right = int(HAUTEUR_ECRAN * 0.3)
-        x_offset_left = int(LARGEUR_ECRAN * 0.25)
-        x_offset_right = int(LARGEUR_ECRAN * 0.75)
+        y_offset_left = int(HAUTEUR_ECRAN * 0.2)
+        y_offset_right = int(HAUTEUR_ECRAN * 0.2)
         
         for i, (texte, image) in enumerate(controles):
-            if i < 4:
-                FENETRE.blit(image, (x_offset_left - int(70*scale_multiplier), y_offset_left - int(32*scale_multiplier)))  # Ajustement pour centrer l'image
-                draw_text_with_outline(FENETRE, texte, font, (255, 255, 255), (0, 0, 0), (x_offset_left, y_offset_left))
+            # Calculer la largeur totale (image + texte) pour centrer
+            texte_surface = font.render(texte, True, (255, 255, 255))
+            total_width = image.get_width() + texte_surface.get_width() + int(20 * scale_multiplier)  # Espacement entre image et texte
+            
+            if i < 4:  # Colonne de gauche
+                x_centered = (LARGEUR_ECRAN // 4) - (total_width // 2)  # Centrer dans le quart gauche
+                FENETRE.blit(image, (x_centered, y_offset_left))
+                draw_text_with_outline(FENETRE, texte, font, (255, 255, 255), (0, 0, 0), 
+                                       (x_centered + image.get_width() + int(20 * scale_multiplier), y_offset_left + image.get_height() // 4))
                 y_offset_left += int(HAUTEUR_ECRAN * 0.15)
-            else:
-                FENETRE.blit(image, (x_offset_right - int(70*scale_multiplier), y_offset_right - int(32*scale_multiplier)))  # Ajustement pour centrer l'image
-                draw_text_with_outline(FENETRE, texte, font, (255, 255, 255), (0, 0, 0), (x_offset_right, y_offset_right))
+            else:  # Colonne de droite
+                x_centered = (3 * LARGEUR_ECRAN // 4) - (total_width // 2)  # Centrer dans le quart droit
+                FENETRE.blit(image, (x_centered, y_offset_right))
+                draw_text_with_outline(FENETRE, texte, font, (255, 255, 255), (0, 0, 0), 
+                                       (x_centered + image.get_width() + int(20 * scale_multiplier), y_offset_right + image.get_height() // 4))
                 y_offset_right += int(HAUTEUR_ECRAN * 0.15)
         
         bouton_retour.dessiner(FENETRE)

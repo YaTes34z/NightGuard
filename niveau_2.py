@@ -783,7 +783,7 @@ def draw_counters():
 def win():
     """Affiche un menu indiquant que le joueur a gagné."""
     clock = pygame.time.Clock()
-   
+    accueil.reinitialiser_niveau_2()
     # Charger l'image du bouton quitter
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     largeur_bouton = int(200 * scale_multiplier)  # Largeur souhaitée pour le bouton

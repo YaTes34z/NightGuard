@@ -645,8 +645,8 @@ def afficher_menu_pause():
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
     
     boutons = [
-        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 60), afficher_controles, image=image_controles),
-        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
+        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(70*scale_multiplier)), afficher_controles, image=image_controles),
+        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(70*scale_multiplier)), accueil.afficher_menu_principal, image=image_quitter)
     ]
     
     while True:

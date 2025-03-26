@@ -47,22 +47,6 @@ fond = pygame.image.load('images/map_niveau2.png')
 # Redimensionner l'image si nécessaire
 fond = pygame.transform.scale(fond, (largeur_map, hauteur_map))
 
-# Charger les images des étoiles
-etoiles_3 = pygame.image.load('images/etoiles3.png').convert_alpha()
-etoiles_2 = pygame.image.load('images/etoiles2.png').convert_alpha()
-etoiles_1 = pygame.image.load('images/etoiles1.png').convert_alpha()
-etoiles_0 = pygame.image.load('images/etoiles0.png').convert_alpha()
-
-# Redimensionner les images des étoiles
-etoiles_3 = pygame.transform.scale(etoiles_3, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
-etoiles_2 = pygame.transform.scale(etoiles_2, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
-etoiles_1 = pygame.transform.scale(etoiles_1, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
-
-# Seuils de temps pour les étoiles
-temps_3_etoiles = 80  # Temps restant pour 3 étoiles
-temps_2_etoiles = 50  # Temps restant pour 2 étoiles
-temps_1_etoiles = 20  # Temps restant pour 1 étoile
-
 # Gestion du temps pour l'animation du personnage
 current_frame = 0
 frame_delay = 5  # Nombre de frames avant de changer d'image
@@ -75,6 +59,22 @@ cadre_batterie = pygame.transform.scale(cadre_batterie, (int(350 * scale_multipl
 
 cadre_vie = pygame.image.load('images/barre_vie.png').convert_alpha()
 cadre_vie = pygame.transform.scale(cadre_vie, (int(355 * scale_multiplier), int(80 * scale_multiplier)))
+
+# Charger les images des étoiles
+etoiles_3 = pygame.image.load('images/etoiles3.png').convert_alpha()
+etoiles_2 = pygame.image.load('images/etoiles2.png').convert_alpha()
+etoiles_1 = pygame.image.load('images/etoiles1.png').convert_alpha()
+etoiles_0 = pygame.image.load('images/etoiles0.png').convert_alpha()
+
+# Redimensionner les images des étoiles
+etoiles_3 = pygame.transform.scale(etoiles_3, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
+etoiles_2 = pygame.transform.scale(etoiles_2, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
+etoiles_1 = pygame.transform.scale(etoiles_1, (int(200 * scale_multiplier), int(100 * scale_multiplier)))
+
+# Seuils de temps pour les étoiles
+temps_3_etoiles = 60  # Temps restant pour 3 étoiles
+temps_2_etoiles = 30  # Temps restant pour 2 étoiles
+temps_1_etoiles = 0  # Temps restant pour 1 étoile
 
 # Classe Bouton
 class Bouton:
@@ -118,10 +118,10 @@ def afficher_menu_pause():
     hauteur_bouton = int(110 * scale_multiplier)
     image_controles = pygame.transform.scale(image_controles, (largeur_bouton, hauteur_bouton))
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
-
+    espacement_vertical = int(100 * scale_multiplier)
     boutons = [
-        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(60 * scale_multiplier)), afficher_controles, image=image_controles),
-        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(60 * scale_multiplier)), accueil.afficher_menu_principal, image=image_quitter)
+        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - espacement_vertical), afficher_controles, image=image_controles),
+        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + espacement_vertical), accueil.afficher_menu_principal, image=image_quitter)
     ]
 
     while True:
@@ -221,11 +221,11 @@ def draw_battery():
     bar_width = int(300 * scale_multiplier)
     bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
-    bar_y = HAUTEUR_ECRAN - 40  # Position en bas de l'écran
+    bar_y = HAUTEUR_ECRAN - int(40 * scale_multiplier)  # Position en bas de l'écran
 
     # Afficher le cadre de la batterie
-    cadre_x = bar_x -25 # Ajuster pour centrer le cadre autour de la barre
-    cadre_y = bar_y -32
+    cadre_x = bar_x - int(25*scale_multiplier) # Ajuster pour centrer le cadre autour de la barre
+    cadre_y = bar_y - int(32*scale_multiplier)
     FENETRE.blit(cadre_batterie, (cadre_x, cadre_y))
 
     # Dessiner la barre de batterie
@@ -237,11 +237,11 @@ def draw_health_bar():
     bar_width = int(300 * scale_multiplier)
     bar_height = int(20 * scale_multiplier)
     bar_x = (LARGEUR_ECRAN - bar_width) // 2
-    bar_y = 20  # Position en haut de l'écran
+    bar_y = int(20 * scale_multiplier)  # Position en haut de l'écran
 
     # Afficher le cadre de la barre de vie
-    cadre_x = bar_x -25 # Ajuster pour centrer le cadre autour de la barre
-    cadre_y = bar_y -29
+    cadre_x = bar_x - int(25*scale_multiplier) # Ajuster pour centrer le cadre autour de la barre
+    cadre_y = bar_y - int(29*scale_multiplier)
     FENETRE.blit(cadre_vie, (cadre_x, cadre_y))
 
     # Dessiner la barre de vie
@@ -276,6 +276,7 @@ def draw_stars():
 
 def draw_stars_win():
     """Affiche les étoiles en fonction du temps restant, juste en dessous du chrono."""
+    global temps_restant, temps_3_etoiles, temps_2_etoiles, temps_1_etoiles 
     stars_x = LARGEUR_ECRAN - int(835 * scale_multiplier) 
     stars_y = int(150 * scale_multiplier) 
 
@@ -287,7 +288,6 @@ def draw_stars_win():
     etoiles_3_small = pygame.transform.scale(etoiles_3, (etoile_width, etoile_height))
     etoiles_2_small = pygame.transform.scale(etoiles_2, (etoile_width, etoile_height))
     etoiles_1_small = pygame.transform.scale(etoiles_1, (etoile_width, etoile_height))
-    etoiles_0_small = pygame.transform.scale(etoiles_0, (etoile_width, etoile_height))
 
     # Afficher les étoiles en fonction du temps restant
     if temps_restant > temps_3_etoiles:
@@ -296,16 +296,13 @@ def draw_stars_win():
         FENETRE.blit(etoiles_2_small, (stars_x, stars_y))
     elif temps_restant > temps_1_etoiles:
         FENETRE.blit(etoiles_1_small, (stars_x, stars_y))
-    else:
-        FENETRE.blit(etoiles_0_small, (stars_x, stars_y))
 
 def calculer_etoiles(temps_restant):
-
-    if temps_restant > 80:
+    if temps_restant > temps_3_etoiles:
         return 3
-    elif temps_restant > 50:
+    elif temps_restant > temps_2_etoiles:
         return 2
-    elif temps_restant > 20:
+    elif temps_restant > temps_1_etoiles:
         return 1
     else:
         return 0
@@ -409,9 +406,9 @@ class Ennemi:
         self.timer = 0
         self.time_in_light = 0  # Temps passé dans le cône de lumière
         self.images = [
-            pygame.image.load('images/ennemi_1.png'),
-            pygame.image.load('images/ennemi_2.png'),
-            pygame.image.load('images/ennemi_3.png')
+            pygame.image.load('images/ennemi2_1.png'),
+            pygame.image.load('images/ennemi2_2.png'),
+            pygame.image.load('images/ennemi2_3.png')
         ]
         self.images = [pygame.transform.scale(img, (self.size, self.size)) for img in self.images]
         self.current_image_index = 0
@@ -644,8 +641,8 @@ def afficher_menu_pause():
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
     
     boutons = [
-        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - 60), afficher_controles, image=image_controles),
-        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
+        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(70*scale_multiplier)), afficher_controles, image=image_controles),
+        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(70*scale_multiplier)), accueil.afficher_menu_principal, image=image_quitter)
     ]
     
     while True:
@@ -783,7 +780,7 @@ def draw_counters():
 def win():
     """Affiche un menu indiquant que le joueur a gagné."""
     clock = pygame.time.Clock()
-    accueil.reinitialiser_niveau_2()
+    accueil.reinitialiser_niveau_1()
     # Charger l'image du bouton quitter
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     largeur_bouton = int(200 * scale_multiplier)  # Largeur souhaitée pour le bouton
@@ -791,6 +788,12 @@ def win():
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
         
     bouton_quitter = Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
+    etoiles_obtenues2 = calculer_etoiles(temps_restant)
+    ancien = lire_variable("sauvegarde2.txt", "etoiles_obtenues2")
+    if ancien is None:
+        ancien = 0  # Si aucun score n'est enregistré, initialiser à 0
+    print(f"Ancien score : {ancien}")
+    print("Etoiles obtenues :", etoiles_obtenues2, "Ancien score :", ancien)
     
     while True:
         fond_win = pygame.image.load("images/fond.jpg").convert()
@@ -807,10 +810,10 @@ def win():
         fond_win_array = cv2.cvtColor(fond_win_array, cv2.COLOR_BGR2RGB)
         fond_win = pygame.surfarray.make_surface(fond_win_array)
         
-        FENETRE.blit(fond_win, (0, 0))
+        FENETRE.blit(fond_win, (0, 0))  
         
         # Afficher le texte "Vous avez gagné !"
-        font = pygame.font.Font(None, int(74 * scale_multiplier))
+        font = pygame.font.Font(None, int(65 * scale_multiplier))
         text_surface = font.render("Vous avez gagné !", True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN // 2 - 60))
         FENETRE.blit(text_surface, text_rect)
@@ -818,9 +821,8 @@ def win():
         # Dessiner le bouton quitter
         bouton_quitter.dessiner(FENETRE)
 
-        etoiles_obtenues2 = calculer_etoiles(temps_restant)
-        #print("Etoiles restantes :", etoiles_obtenues1)
-        ecrire_variable("sauvegarde2.txt", "etoiles_obtenues2", etoiles_obtenues2)
+        if ancien is None or etoiles_obtenues2 > ancien:  # Vérifie si le score est meilleur
+            ecrire_variable("sauvegarde2.txt", "etoiles_obtenues2", etoiles_obtenues2)
         draw_stars_win()
         
         pygame.display.flip()
@@ -886,7 +888,6 @@ def draw_timer():
     FENETRE.blit(text_surface, (LARGEUR_ECRAN - int(120 * scale_multiplier), int(20 * scale_multiplier)))
 
 def reinitialiser():
-    """Réinitialise toutes les variables du niveau 1 à leur état initial."""
     global x, y, camera_x, camera_y, ennemis_tues, bacteries_nettoyees, moisissures, cone_active
     global spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed
     global last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval
@@ -926,8 +927,6 @@ def reinitialiser():
     spawn_timer = 0
     spawn_interval = 5
 
-    ecrire_variable("sauvegarde2.txt", "etoiles_obtenues2", 0)
-
     print("Niveau 1 réinitialisé.")
 
 def main():
@@ -940,6 +939,7 @@ def main():
     bacteries_nettoyees = 0
     moisissures = []
     cone_active = False
+    temps_restant = 100
     while running:
         dt = clock.tick(30) / 1000.0  # Limiter le framerate à 30 FPS et obtenir un dt constant
 
@@ -1042,7 +1042,7 @@ def main():
             mask.fill((0, 0, 0, 245))
             player_screen_x = x - camera_x + square_size // 2
             player_screen_y = y - camera_y + square_size // 2
-            player_light_radius = int(65*scale_multiplier)  # Rayon de la lumière autour du personnage
+            player_light_radius = int(65* scale_multiplier)  # Rayon de la lumière autour du personnage
             pygame.draw.circle(mask, (0, 0, 0, 150), (player_screen_x, player_screen_y), player_light_radius)
             FENETRE.blit(mask, (0, 0))
             cone_points = []
@@ -1109,21 +1109,23 @@ def main():
         # Afficher les compteurs
         draw_counters()
 
-
-        if bacteries_nettoyees>=5 and ennemis_tues>=5:
+    
+        if bacteries_nettoyees >= 5 and ennemis_tues >= 5:
             win()
-
+            
+            
         if player_health == 0:
             loose()
 
         if dialogues_termines:
             temps_restant -= dt
+            draw_stars()
             if temps_restant <= 0:
                 loose() 
 
         # Mettre à jour l'affichage de la fenêtre
         pygame.display.update()
-
+    
     # Quitter Pygame proprement
     pygame.quit()
 

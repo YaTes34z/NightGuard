@@ -791,6 +791,9 @@ def win():
     bouton_quitter = Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + 60), accueil.afficher_menu_principal, image=image_quitter)
     etoiles_obtenues1 = calculer_etoiles(temps_restant)
     ancien = lire_variable("sauvegarde1.txt", "etoiles_obtenues1")
+    if ancien is None:
+        ancien = 0  # Si aucun score n'est enregistré, initialiser à 0
+    print(f"Ancien score : {ancien}")
     print("Etoiles obtenues :", etoiles_obtenues1, "Ancien score :", ancien)
     
     while True:
@@ -924,8 +927,6 @@ def reinitialiser():
     # Réinitialisation du timer de spawn
     spawn_timer = 0
     spawn_interval = 5
-
-    ecrire_variable("sauvegarde1.txt", "etoiles_obtenues1", 0)
 
     print("Niveau 1 réinitialisé.")
 

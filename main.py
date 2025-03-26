@@ -236,7 +236,6 @@ def afficher_menu_principal():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for bouton in boutons:
                     if bouton.clic(event.pos):
-                        print(f"Bouton cliqué : {bouton.texte}")
                         bouton.action()
         
         clock.tick(30)

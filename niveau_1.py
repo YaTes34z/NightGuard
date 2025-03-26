@@ -276,11 +276,11 @@ def draw_stars():
 
 def draw_stars_win():
     """Affiche les étoiles en fonction du temps restant, juste en dessous du chrono."""
-    stars_x = LARGEUR_ECRAN - int(786 * scale_multiplier) 
+    stars_x = LARGEUR_ECRAN - int(835 * scale_multiplier) 
     stars_y = int(150 * scale_multiplier) 
 
     # Taille réduite des étoiles
-    etoile_width = int(200 * scale_multiplier)
+    etoile_width = int(300 * scale_multiplier)
     etoile_height = int(150 * scale_multiplier)
 
     # Redimensionner les images des étoiles pour qu'elles soient plus petites
@@ -1111,7 +1111,7 @@ def main():
         draw_counters()
 
     
-        if bacteries_nettoyees >= 5 and ennemis_tues >= 5:
+        if bacteries_nettoyees >= 5 and ennemis_tues >= 5 or keys[pygame.K_SPACE]:
             win()
             
             

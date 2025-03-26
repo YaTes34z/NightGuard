@@ -162,6 +162,7 @@ def draw_etoiles_image(niveau, etoiles, bouton_rect):
 def lancer_niveau_1():
     global etoiles_niveau_1
     jouer_cinematique(1)
+    etoiles_obtenues = 0
     etoiles_obtenues = niveau_1.main()
     if etoiles_obtenues > etoiles_niveau_1:
         etoiles_niveau_1 = etoiles_obtenues
@@ -170,6 +171,7 @@ def lancer_niveau_1():
 def lancer_niveau_2():
     global etoiles_niveau_2
     #jouer_cinematique(2)
+    etoiles_obtenues = 0
     etoiles_obtenues = niveau_2.main()
     if etoiles_obtenues > etoiles_niveau_1:
         etoiles_niveau_1 = etoiles_obtenues

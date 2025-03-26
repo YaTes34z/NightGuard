@@ -191,6 +191,7 @@ def afficher_menu_principal():
     # Charger les images des boutons
     image_niveau_1 = pygame.image.load('images/bouton_niveau1.png').convert_alpha()
     image_niveau_2 = pygame.image.load('images/bouton_niveau2.png').convert_alpha()
+    image_reinitialiser = pygame.image.load('images/reinitialiser.png').convert_alpha()
     image_controles = pygame.image.load('images/bouton_controles.png').convert_alpha()
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     
@@ -199,14 +200,16 @@ def afficher_menu_principal():
     hauteur_bouton = int(110*scale_multiplier)   # Hauteur souhaitée pour les boutons
     image_niveau_1 = pygame.transform.scale(image_niveau_1, (largeur_bouton, hauteur_bouton))
     image_niveau_2 = pygame.transform.scale(image_niveau_2, (largeur_bouton, hauteur_bouton))
+    image_reinitialiser = pygame.transform.scale(image_reinitialiser, (largeur_bouton, hauteur_bouton))
     image_controles = pygame.transform.scale(image_controles, (largeur_bouton, hauteur_bouton))
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
     
     boutons = [
         Bouton("Niveau 1", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier)), lancer_niveau_1, image=image_niveau_1),
-        Bouton("🔄️", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier) + hauteur_bouton//4), reinitialiser_niveau_1),
+        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier)), reinitialiser_niveau_1, image=image_reinitialiser),
         Bouton("Niveau 2", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), lancer_niveau_2, image=image_niveau_2),
-        Bouton("🔄️", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier) + hauteur_bouton//4), reinitialiser_niveau_2),
+        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), reinitialiser_niveau_2, image=image_reinitialiser),
+        Bouton("Niveau 2", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), lancer_niveau_2, image=image_niveau_2),
         Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(100*scale_multiplier)), afficher_controles, image=image_controles),
         Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(220*scale_multiplier)), lambda: pygame.quit() or sys.exit(), image=image_quitter)
     ]
@@ -235,7 +238,6 @@ def afficher_menu_principal():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for bouton in boutons:
                     if bouton.clic(event.pos):
-                        print(f"Bouton cliqué : {bouton.texte}")
                         bouton.action()
         
         clock.tick(30)

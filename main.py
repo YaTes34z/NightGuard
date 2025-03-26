@@ -21,7 +21,6 @@ try:
     FENETRE = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.FULLSCREEN)
     pygame.display.set_caption("Mon Jeu")
 except pygame.error as e:
-    print(f"Erreur lors de la création de la fenêtre : {e}")
     sys.exit()
 
 # Chargement des images
@@ -29,7 +28,6 @@ try:
     fond = pygame.image.load("images/fond.png").convert()
     logo = pygame.image.load("images/logo.png").convert_alpha()
 except pygame.error as e:
-    print(f"Erreur lors du chargement des images : {e}")
     sys.exit()
 
 # Redimensionnement des images pour s'adapter à la résolution de l'écran
@@ -161,6 +159,7 @@ def draw_etoiles_image(niveau, etoiles, bouton_rect):
 
 def lancer_niveau_1():
     global etoiles_niveau_1
+    niveau_1.reinitialiser()
     jouer_cinematique(1)
     etoiles_obtenues = 0
     etoiles_obtenues = niveau_1.main()
@@ -170,6 +169,7 @@ def lancer_niveau_1():
 
 def lancer_niveau_2():
     global etoiles_niveau_2
+    niveau_2.reinitialiser()
     #jouer_cinematique(2)
     etoiles_obtenues = 0
     etoiles_obtenues = niveau_2.main()
@@ -178,11 +178,9 @@ def lancer_niveau_2():
 
 def reinitialiser_niveau_1():
     niveau_1.reinitialiser()
-    print("Progression du niveau 1 réinitialisée.")
 
 def reinitialiser_niveau_2():
     niveau_2.reinitialiser()
-    print("Progression du niveau 2 réinitialisée.")
 
 def afficher_menu_principal():
     """Affiche le menu principal."""

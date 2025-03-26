@@ -793,9 +793,7 @@ def win():
     ancien = lire_variable("sauvegarde1.txt", "etoiles_obtenues1")
     if ancien is None:
         ancien = 0  # Si aucun score n'est enregistré, initialiser à 0
-    print(f"Ancien score : {ancien}")
-    print("Etoiles obtenues :", etoiles_obtenues1, "Ancien score :", ancien)
-    
+
     while True:
         fond_win = pygame.image.load("images/fond.jpg").convert()
         fond_win = pygame.transform.scale(fond_win, (LARGEUR_ECRAN, HAUTEUR_ECRAN))
@@ -841,7 +839,7 @@ def win():
         clock.tick(30)
 
 def loose():
-    """Affiche un menu indiquant que le joueur a gagné."""
+    """Affiche un menu indiquant que le joueur a perdu."""
     clock = pygame.time.Clock()
    
     # Charger l'image du bouton quitter
@@ -855,7 +853,7 @@ def loose():
     while True:
         FENETRE.fill((0, 0, 0))  # Remplir l'écran de noir
         
-        # Afficher le texte "Vous avez gagné !"
+        # Afficher le texte "Vous avez perdu !"
         font = pygame.font.Font(None, int(74 * scale_multiplier))
         text_surface = font.render("Vous avez perdu !", True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=(LARGEUR_ECRAN // 2, HAUTEUR_ECRAN // 2 - 60))
@@ -868,15 +866,15 @@ def loose():
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                return  # Retourner au menu principal
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_quitter.clic(event.pos):
                     bouton_quitter.action()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return  # Retourner au jeu
+                return  # Retourner au menu principal
             
         clock.tick(30)
+
 temps_restant = 100
 
 def draw_timer():
@@ -928,7 +926,6 @@ def reinitialiser():
     spawn_timer = 0
     spawn_interval = 5
 
-    print("Niveau 1 réinitialisé.")
 
 def main():
     global temps_restant, bacteries_nettoyees, fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures

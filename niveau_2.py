@@ -552,9 +552,9 @@ spawn_timer = 0
 spawn_interval = 5  # Intervalle de génération des ennemis en secondes
 
 dialogues = [
-    "Oh non ! Pas encore !",
-    "Je dois trouver les  derniers ennemis !",
-    "Je dois trouver un moyen de sortir d'ici !"
+    "Oh non ! Pas encore...",
+    "Je dois trouver les derniers ennemis.",
+    "Il faut que je sauve le musée !"
 ]
 current_dialogue_index = 0
 show_dialogue = True
@@ -792,8 +792,7 @@ def win():
     ancien = lire_variable("sauvegarde2.txt", "etoiles_obtenues2")
     if ancien is None:
         ancien = 0  # Si aucun score n'est enregistré, initialiser à 0
-    print(f"Ancien score : {ancien}")
-    print("Etoiles obtenues :", etoiles_obtenues2, "Ancien score :", ancien)
+
     
     while True:
         fond_win = pygame.image.load("images/fond.jpg").convert()
@@ -927,7 +926,6 @@ def reinitialiser():
     spawn_timer = 0
     spawn_interval = 5
 
-    print("Niveau 1 réinitialisé.")
 
 def main():
     global temps_restant, bacteries_nettoyees, fond, x, y, running, camera_x, camera_y, frame_count, current_frame, current_direction, battery, cone_active, ennemis_tues, spawn_timer, spawn_interval, current_dialogue_index, show_dialogue, dialogue_speed, last_update_time, current_letter_index, show_ellipsis, ellipsis_timer, ellipsis_interval, dialogues_termines, moisissures

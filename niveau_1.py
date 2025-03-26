@@ -118,10 +118,10 @@ def afficher_menu_pause():
     hauteur_bouton = int(110 * scale_multiplier)
     image_controles = pygame.transform.scale(image_controles, (largeur_bouton, hauteur_bouton))
     image_quitter = pygame.transform.scale(image_quitter, (largeur_bouton, hauteur_bouton))
-
+    espacement_vertical = int(100 * scale_multiplier)
     boutons = [
-        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(60 * scale_multiplier)), afficher_controles, image=image_controles),
-        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(60 * scale_multiplier)), accueil.afficher_menu_principal, image=image_quitter)
+        Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - espacement_vertical), afficher_controles, image=image_controles),
+        Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + espacement_vertical), accueil.afficher_menu_principal, image=image_quitter)
     ]
 
     while True:
@@ -784,7 +784,7 @@ def draw_counters():
 def win():
     """Affiche un menu indiquant que le joueur a gagné."""
     clock = pygame.time.Clock()
-   
+    accueil.reinitialiser_niveau_1()
     # Charger l'image du bouton quitter
     image_quitter = pygame.image.load('images/bouton_quitter.png').convert_alpha()
     largeur_bouton = int(200 * scale_multiplier)  # Largeur souhaitée pour le bouton

@@ -59,8 +59,8 @@ class Bouton:
             self.rect = self.image.get_rect(topleft=position)
         else:
             self.rect = pygame.Rect(position[0], position[1], int(100*scale_multiplier), int(50*scale_multiplier))  # Taille par défaut pour un bouton sans image
-        self.couleur = (200, 0, 0)  # Rouge par défaut
-        self.couleur_hover = (255, 50, 50)  # Rouge clair pour hover
+        self.couleur = (64, 0, 0)  # Rouge par défaut
+        self.couleur_hover = (100, 50, 50)  # Rouge clair pour hover
 
     def dessiner(self, surface):
         couleur = self.couleur_hover if self.rect.collidepoint(pygame.mouse.get_pos()) else self.couleur
@@ -68,7 +68,8 @@ class Bouton:
             surface.blit(self.image, self.rect.topleft)
         else:
             pygame.draw.rect(surface, couleur, self.rect, border_radius=5)
-            font = pygame.font.Font(None, int(36*scale_multiplier))
+            # Utiliser une police qui prend en charge les émojis
+            font = pygame.font.Font(pygame.font.match_font("segoeuiemoji"), int(36*scale_multiplier))
             texte_surface = font.render(self.texte, True, (255, 255, 255))
             texte_rect = texte_surface.get_rect(center=self.rect.center)
             surface.blit(texte_surface, texte_rect)
@@ -201,9 +202,9 @@ def afficher_menu_principal():
     
     boutons = [
         Bouton("Niveau 1", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier)), lancer_niveau_1, image=image_niveau_1),
-        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier)), reinitialiser_niveau_1),
+        Bouton("🔄️", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(140*scale_multiplier) + hauteur_bouton//4), reinitialiser_niveau_1),
         Bouton("Niveau 2", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), lancer_niveau_2, image=image_niveau_2),
-        Bouton("Réinitialiser", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier)), reinitialiser_niveau_2),
+        Bouton("🔄️", (LARGEUR_ECRAN // 2 + largeur_bouton // 2 + 20, HAUTEUR_ECRAN // 2 - int(20*scale_multiplier) + hauteur_bouton//4), reinitialiser_niveau_2),
         Bouton("Contrôles", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(100*scale_multiplier)), afficher_controles, image=image_controles),
         Bouton("Quitter", (LARGEUR_ECRAN // 2 - largeur_bouton // 2, HAUTEUR_ECRAN // 2 + int(220*scale_multiplier)), lambda: pygame.quit() or sys.exit(), image=image_quitter)
     ]

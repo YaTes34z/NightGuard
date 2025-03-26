@@ -534,8 +534,8 @@ def nettoyer_moisissure():
                     # Dessiner la barre de progression
                     bar_width = int(50 * scale_multiplier)
                     bar_height = int(5 * scale_multiplier)
-                    bar_x = moisissure_screen_x - bar_width // 2  # Centrer la barre horizontalement
-                    bar_y = moisissure_screen_y - int(40 * scale_multiplier)  # Positionner au-dessus de la moisissure
+                    bar_x = moisissure_screen_x - bar_width // 5 # Centrer la barre horizontalement
+                    bar_y = moisissure_screen_y - int(10 * scale_multiplier)  # Positionner au-dessus de la moisissure
                     pygame.draw.rect(FENETRE, (255, 255, 255), (bar_x, bar_y, bar_width, bar_height))  # Fond blanc
                     pygame.draw.rect(FENETRE, (0, 255, 0), (bar_x, bar_y, int(bar_width * progression), bar_height))  # Barre verte
 
@@ -773,7 +773,7 @@ def afficher_controles():
                     afficher_menu_pause
 
 def draw_counters():
-    font = pygame.font.Font(None, int(40*scale_multiplier))
+    font = pygame.font.Font(None, int(30*scale_multiplier))
     text_ennemis = font.render(f"Ennemis tués: {ennemis_tues}", True, (255, 255, 255))
     text_bacteries = font.render(f"Bactéries nettoyées: {bacteries_nettoyees}", True, (255, 255, 255))
     FENETRE.blit(text_ennemis, (int(20 * scale_multiplier), int(20 * scale_multiplier)))
@@ -1042,7 +1042,7 @@ def main():
             mask.fill((0, 0, 0, 245))
             player_screen_x = x - camera_x + square_size // 2
             player_screen_y = y - camera_y + square_size // 2
-            player_light_radius = 65  # Rayon de la lumière autour du personnage
+            player_light_radius = int(65*scale_multiplier)  # Rayon de la lumière autour du personnage
             pygame.draw.circle(mask, (0, 0, 0, 150), (player_screen_x, player_screen_y), player_light_radius)
             FENETRE.blit(mask, (0, 0))
             cone_points = []

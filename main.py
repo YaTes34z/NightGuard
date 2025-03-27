@@ -19,7 +19,7 @@ scale_multiplier = HAUTEUR_ECRAN / base_height
 
 try:
     FENETRE = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN), pygame.FULLSCREEN)
-    pygame.display.set_caption("Mon Jeu")
+    pygame.display.set_caption("NightGuard")
 except pygame.error as e:
     sys.exit()
 

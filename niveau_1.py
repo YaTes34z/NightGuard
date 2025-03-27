@@ -480,8 +480,11 @@ class Ennemi:
 
     def deposer_moisissure(self):
         """Dépose de la moisissure à la position actuelle de l'ennemi."""
-        moisissures.append((self.x, self.y))
-        moisissure_colliders.append(pygame.Rect(self.x, self.y, int(64 * scale_multiplier), int(64 * scale_multiplier)))
+        # Ajuster les coordonnées pour centrer l'image de la moisissure
+        moisissure_x = self.x - self.size // 4  # Ajustement horizontal
+        moisissure_y = self.y - self.size // 4  # Ajustement vertical
+        moisissures.append((moisissure_x, moisissure_y))
+        moisissure_colliders.append(pygame.Rect(moisissure_x, moisissure_y-int(32*scale_multiplier), int(64 * scale_multiplier), int(128 * scale_multiplier)))
 
     
 
@@ -517,9 +520,9 @@ def nettoyer_moisissure():
     mouse_x, mouse_y = pygame.mouse.get_pos()
     temps_actuel = pygame.time.get_ticks()
     for moisissure in moisissures[:]:
-        moisissure_screen_x = moisissure[0] - camera_x
-        moisissure_screen_y = moisissure[1] - camera_y
-        distance = math.sqrt((mouse_x - moisissure_screen_x) ** 2 + (mouse_y - moisissure_screen_y) ** 2)
+        moisissure_screen_x = moisissure[0] - camera_x + int(115*scale_multiplier)  # Ajustement horizontal
+        moisissure_screen_y = moisissure[1] - camera_y + int(75*scale_multiplier)  # Ajustement vertical
+        distance = math.sqrt((mouse_x - (moisissure_screen_x)) ** 2 + (mouse_y - moisissure_screen_y) ** 2)
         if distance < int(75 * scale_multiplier):  # Si la souris est suffisamment proche de la moisissure
             if pygame.mouse.get_pressed()[0]:  # Si le bouton gauche de la souris est enfoncé
                 if moisissure not in nettoyage_temps_debut:
@@ -531,8 +534,8 @@ def nettoyer_moisissure():
                     # Dessiner la barre de progression
                     bar_width = int(50 * scale_multiplier)
                     bar_height = int(5 * scale_multiplier)
-                    bar_x = moisissure_screen_x - bar_width // 5 # Centrer la barre horizontalement
-                    bar_y = moisissure_screen_y - int(10 * scale_multiplier)  # Positionner au-dessus de la moisissure
+                    bar_x = moisissure_screen_x - int(64*scale_multiplier) # Centrer la barre horizontalement
+                    bar_y = moisissure_screen_y - int(64*scale_multiplier) # Positionner au-dessus de la moisissure
                     pygame.draw.rect(FENETRE, (255, 255, 255), (bar_x, bar_y, bar_width, bar_height))  # Fond blanc
                     pygame.draw.rect(FENETRE, (0, 255, 0), (bar_x, bar_y, int(bar_width * progression), bar_height))  # Barre verte
 

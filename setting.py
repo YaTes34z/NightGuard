@@ -45,5 +45,8 @@ velocity = int(largeur_map / 300)  # Vitesse de déplacement
 camera_x, camera_y = 0, 0
 
 # Ajouter une texture de moisissure
-moisissure_image = pygame.image.load('images/boue.png')
-moisissure_image = pygame.transform.scale(moisissure_image, (int(125 * scale_multiplier), int(125 * scale_multiplier)))
+moisissure_image = pygame.image.load('images/tache1.png')
+moisissure_image = pygame.transform.scale(moisissure_image, (int(150 * scale_multiplier), int(150 * scale_multiplier)))
+# Ajouter une texture de moisissure2
+moisissure_image2 = pygame.image.load('images/tache2.png')
+moisissure_image2 = pygame.transform.scale(moisissure_image, (int(150 * scale_multiplier), int(150 * scale_multiplier)))
